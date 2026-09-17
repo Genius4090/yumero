@@ -1,44 +1,58 @@
-import { MapPin, Search } from "lucide-react"
+import { Link, NavLink } from "react-router-dom"
+import { useEffect, useState } from "react"
 import { WebsiteLogo } from "../assets/images"
-import { Button } from "../components"
+import { AddressSelect, AuthModal, Button, HeaderSearch } from "../components"
+
+const navLinks = [
+  { to: "/home", label: "Главная" },
+  { to: "/menu", label: "Меню" },
+  { to: "/contact", label: "Контакты" },
+]
 
 const Header = () => {
+  const [scrolled, setScrolled] = useState<boolean>(false)
 
-  
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50)
+    handleScroll()
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
   return (
-    <section className="fixed w-full">
-        <div className="px-4 flex items-center py-5 justify-between">
-        <div className="flex gap-8 items-center">
-        <img src={WebsiteLogo} alt="" width={120} height={120}/>
-        
-       <div className="flex items-center ">
-     <span className="bg-[#250036] text-[#FB00FF] rounded-full p-2">
-     <MapPin />
-     </span>
-       <select className="text-[#FB00FF] px-2 font-semibold outline-none">
-            <option value="0" className="">Ташкент</option>
-        </select>
-       </div>
+    <header
+      className={`fixed top-0 z-50 w-full transition-[background-color,backdrop-filter] duration-300 ${
+        scrolled ? "bg-black/40 backdrop-blur-md" : ""
+      }`}
+    >
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center px-6 py-4">
+        <div className="flex items-center gap-6">
+          <Link to="/home" aria-label="Yumero — на главную" className="shrink-0">
+            <img src={WebsiteLogo} alt="Yumero" className="h-9 w-auto object-contain" />
+          </Link>
+          <AddressSelect />
         </div>
 
-         <label className="flex px-4 bg-[#2b2a2a] w-[450px] gap-2 py-2 items-center justify-center rounded-full">
-         <Search className="text-white w-4"/>
-         <input type="text" placeholder="Search in Yumero" className="outline-none w-full placeholder:text-[#c4c4c4]  text-[#c4c4c4]"/>
-         </label>
-         <div className="flex">
-            <Button extraClass="bg-transparent! text-white">
-                <h2>Log in</h2>
-            </Button>
-            <Button extraClass="bg-[#250036]! text-[#FB00FF]!">
-                <h2>Sign up</h2>
-            </Button>
-         </div>
+        <nav aria-label="Основная навигация">
+          <ul className="flex gap-5">
+            {navLinks.map((link) => (
+              <li key={link.to}>
+                <NavLink to={link.to} className="rounded-sm px-4 py-2 transition-colors duration-200 hover:text-white/80">
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="flex items-center gap-4 justify-self-end">
+          <HeaderSearch />
+          <AuthModal>
+            <Button extraClass="font-semibold">Войти</Button>
+          </AuthModal>
         </div>
-        <div className="w-full relative flex items-center justify-center header-auction h-8">
-            <h2 className="text-white text-sm">use FAST4 code for 20% off</h2>
-        </div>
-        
-    </section>
+      </div>
+    </header>
   )
 }
 

@@ -1,15 +1,18 @@
-import type { FC, MouseEventHandler, ReactNode } from "react"
+import type { ComponentProps, FC } from "react"
 
-interface ButtonType {
-    children:ReactNode,
-    extraClass?:string,
-    onClick?:MouseEventHandler<HTMLButtonElement>; 
+interface ButtonProps extends ComponentProps<"button"> {
+  extraClass?: string
 }
 
-
-const Button:FC<ButtonType> = ({children,extraClass,onClick}) => {
+const Button: FC<ButtonProps> = ({ children, extraClass = "", type = "button", className, ...rest }) => {
   return (
-    <button onClick={onClick} className={`cursor-pointer bg-white text-black py-2 px-6 rounded-xl ${extraClass}`}>{children}</button>
+    <button
+      type={type}
+      className={`cursor-pointer hover:-translate-y-0.5 duration-300 bg-white text-black py-2 px-6 rounded-xl flex justify-between items-center gap-2 ${extraClass} ${className ?? ""}`}
+      {...rest}
+    >
+      {children}
+    </button>
   )
 }
 

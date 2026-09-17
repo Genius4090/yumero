@@ -12,23 +12,20 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
-    @apply border-border outline-ring/50;
   }
   body{
-background-color: #111114;
-/* background-color: rgb(51, 50, 50); */
     @apply bg-background text-foreground;
   }
   html {
     @apply font-sans;
+    scrollbar-gutter: stable;
   }
 }
 
 .containers {
   width: 1200px;
   margin: 0 auto;
-  padding-right: 10px;
-  padding-left: 10px;
+
 }
 
 .header-auction{
@@ -148,4 +145,29 @@ background-color: #111114;
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1677FF;
+}
+
+
+.active{
+  background-color: white;
+  color: black;
 }

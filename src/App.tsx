@@ -1,6 +1,7 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Home } from "./pages";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import { Home, NotFound } from "./pages";
 import { RootLayout } from "./layouts";
+import { Menu } from "./modules";
 function App() {
   const router = createBrowserRouter([
     {
@@ -8,10 +9,22 @@ function App() {
       element: <RootLayout/>,
       children: [
         {
-          index:true,
-          path:"/home",
+          index: true,
+          element: <Navigate to="/home" replace /> // ✅ redirect
+        },
+        {
+          path:"home",
           element: <Home/>  
-        }
+        },
+        {
+          path:"menu",
+          element: <Menu/>  
+        },
+        {
+
+          path:"*",
+          element: <NotFound/>  
+        },
       ]
     },
   ]);
