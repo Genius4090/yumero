@@ -1,0 +1,3 @@
+# Keep LF endings for files consumed by Docker/Linux even when edited on Windows
+Dockerfile text eol=lf
+*.sh text eol=lf

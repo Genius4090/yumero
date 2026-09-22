@@ -3,6 +3,7 @@ import { Dialog as DialogPrimitive } from "radix-ui"
 import { XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/i18n/useI18n"
 
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
@@ -35,6 +36,7 @@ function DialogContent({
   showCloseButton = true,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean }) {
+  const { t } = useI18n()
   return (
     <DialogPrimitive.Portal data-slot="dialog-portal">
       <DialogOverlay />
@@ -50,7 +52,7 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            aria-label="Закрыть"
+            aria-label={t("common.close")}
             className="absolute top-4 right-4 grid size-9 cursor-pointer place-items-center rounded-full text-[#c4c4c4] transition-colors hover:bg-[#2b2a2a] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
           >
             <XIcon className="size-5" />

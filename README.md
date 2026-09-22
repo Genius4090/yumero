@@ -1,73 +1,35 @@
-# React + TypeScript + Vite
+# Yumero frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Customer site + admin panel (`/admin`) for the Yumero food delivery service. React 19, Vite, TypeScript, Tailwind 4, React Query.
 
-Currently, two official plugins are available:
+The API lives in the separate **yumero-backend** repo, which also contains the production Docker Compose stack (Postgres + API + Caddy) and the deploy guide. In production this repo is built by its `Dockerfile` into a Caddy image; the backend's `docker-compose.yml` expects it checked out next to the backend folder (`../yumero-frontend`).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Local development
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cp .env.example .env.local   # optional: Yandex Maps key
+npm install
+npm run dev                  # http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The dev server proxies `/api` and `/uploads` to `http://localhost:4000`, so start the backend first (`pnpm dev` in yumero-backend with `OTP_DEV_MODE=true`; verification code `000000`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Scripts: `npm run build` (typecheck + production build), `npm run lint`, `npm run preview`.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Environment variables
+
+| Variable | Purpose |
+|---|---|
+| `VITE_YANDEX_MAPS_API_KEY` | Yandex Maps key for the address picker; empty = OpenStreetMap/Leaflet fallback |
+| `VITE_API_URL` | Backend origin. Leave empty for same-origin (production and the dev proxy) |
+
+## Structure
+
+```
+src/api/hooks.ts        React Query hooks for the public API
+src/admin/              admin panel (login, layout, pages, admin API hooks)
+src/lib/api.ts          fetch wrapper: bearer token, refresh-on-401, typed ApiError
+src/lib/localized.ts    pickText(): choose ru/en/uz from API texts
+src/context/            auth, cart (local), addresses, orders, settings
+src/i18n/               ru / en / uz dictionaries (typed keys)
 ```

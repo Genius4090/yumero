@@ -28,7 +28,7 @@ const MapPicker = ({ lat, lng, onChange, className = "" }: MapPickerProps) => {
   const viewProps = { lat, lng, onChange, onDragStateChange: setDragging }
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative isolate ${className}`}>
       {provider === "yandex" ? (
         <YandexMapView key="yandex" {...viewProps} onError={handleYandexError} />
       ) : (

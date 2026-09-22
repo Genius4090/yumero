@@ -2,7 +2,7 @@ import type { menuListType } from "@/@types"
 import { Link } from "react-router-dom"
 
 
-const MenuItem = ({item,setMenuId}:{item:menuListType,setMenuId:any}) => {
+const MenuItem = ({item,setMenuId}:{item:menuListType,setMenuId:(id:number)=>void}) => {
  
   
   

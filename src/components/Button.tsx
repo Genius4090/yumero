@@ -8,7 +8,7 @@ const Button: FC<ButtonProps> = ({ children, extraClass = "", type = "button", c
   return (
     <button
       type={type}
-      className={`cursor-pointer hover:-translate-y-0.5 duration-300 bg-white text-black py-2 px-6 rounded-xl flex justify-between items-center gap-2 ${extraClass} ${className ?? ""}`}
+      className={`cursor-pointer  bg-white text-black py-2 px-6 rounded-xl flex justify-between items-center gap-2 ${extraClass} ${className ?? ""}`}
       {...rest}
     >
       {children}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEv
 import { LocateFixed, Search, X } from "lucide-react"
 import type { addressType } from "@/@types"
 import { reverseGeocode } from "@/lib/geocode"
+import { useI18n } from "@/i18n/useI18n"
 import Button from "./Button"
 import MapPicker from "./MapPicker"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "./ui/dialog"
@@ -31,11 +32,14 @@ interface AddressModalProps {
   onSave: (draft: AddressDraft) => void
 }
 
+type LocateError = "geoUnavailable" | "geoFailed"
+
 const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
+  const { t } = useI18n()
   const [draft, setDraft] = useState<AddressDraft>(emptyDraft)
   const [locating, setLocating] = useState(false)
   const [geocoding, setGeocoding] = useState(false)
-  const [locateError, setLocateError] = useState<string | null>(null)
+  const [locateError, setLocateError] = useState<LocateError | null>(null)
   const abortRef = useRef<AbortController | null>(null)
   const debounceRef = useRef<number | null>(null)
 
@@ -94,7 +98,7 @@ const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
 
   const locate = () => {
     if (!("geolocation" in navigator)) {
-      setLocateError("Геолокация недоступна в этом браузере")
+      setLocateError("geoUnavailable")
       return
     }
     setLocating(true)
@@ -108,7 +112,7 @@ const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
       },
       () => {
         setLocating(false)
-        setLocateError("Не удалось определить местоположение")
+        setLocateError("geoFailed")
       },
       { enableHighAccuracy: true, timeout: 10000 }
     )
@@ -133,8 +137,8 @@ const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
         <div className="grid h-full grid-cols-1 gap-6 p-6 md:grid-cols-2 md:p-7">
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <div className="mb-2">
-              <DialogTitle>Выберите адрес доставки</DialogTitle>
-              <DialogDescription className="mt-1">Это даёт возможность увидеть актуальное меню</DialogDescription>
+              <DialogTitle>{t("address.modalTitle")}</DialogTitle>
+              <DialogDescription className="mt-1">{t("address.modalDescription")}</DialogDescription>
             </div>
 
             <label className="relative block">
@@ -142,30 +146,30 @@ const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
               <input
                 value={draft.address}
                 onChange={update("address")}
-                placeholder={geocoding ? "Определяем адрес…" : "Введите адрес"}
-                aria-label="Адрес"
+                placeholder={geocoding ? t("address.detecting") : t("address.enterAddress")}
+                aria-label={t("address.addressAria")}
                 autoFocus
                 className={`${inputClass} pl-12`}
               />
             </label>
 
-            <input value={draft.title} onChange={update("title")} placeholder="Название" aria-label="Название" className={inputClass} />
+            <input value={draft.title} onChange={update("title")} placeholder={t("address.title")} aria-label={t("address.title")} className={inputClass} />
 
             <div className="grid grid-cols-2 gap-3">
-              <input value={draft.house} onChange={update("house")} placeholder="Дом" aria-label="Дом" className={inputClass} />
-              <input value={draft.apartment} onChange={update("apartment")} placeholder="Квартира" aria-label="Квартира" className={inputClass} />
-              <input value={draft.floor} onChange={update("floor")} placeholder="Этаж" aria-label="Этаж" className={inputClass} />
-              <input value={draft.entrance} onChange={update("entrance")} placeholder="Подъезд" aria-label="Подъезд" className={inputClass} />
+              <input value={draft.house} onChange={update("house")} placeholder={t("address.house")} aria-label={t("address.house")} className={inputClass} />
+              <input value={draft.apartment} onChange={update("apartment")} placeholder={t("address.apartment")} aria-label={t("address.apartment")} className={inputClass} />
+              <input value={draft.floor} onChange={update("floor")} placeholder={t("address.floor")} aria-label={t("address.floor")} className={inputClass} />
+              <input value={draft.entrance} onChange={update("entrance")} placeholder={t("address.entrance")} aria-label={t("address.entrance")} className={inputClass} />
             </div>
 
-            <input value={draft.comment} onChange={update("comment")} placeholder="Комментарий курьеру" aria-label="Комментарий курьеру" className={inputClass} />
+            <input value={draft.comment} onChange={update("comment")} placeholder={t("address.courierComment")} aria-label={t("address.courierComment")} className={inputClass} />
 
             <Button
               type="submit"
               disabled={!canSave}
               extraClass="mt-auto w-full justify-center py-3.5 font-semibold disabled:cursor-not-allowed disabled:bg-[#3a3939] disabled:text-[#8a8a8a] disabled:hover:translate-y-0"
             >
-              Сохранить
+              {t("address.save")}
             </Button>
           </form>
 
@@ -173,7 +177,7 @@ const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
             <MapPicker lat={draft.lat} lng={draft.lng} onChange={handleMapChange} className="h-full w-full" />
 
             <DialogClose
-              aria-label="Закрыть"
+              aria-label={t("common.close")}
               className="absolute top-3 right-3 z-1100 grid size-10 cursor-pointer place-items-center rounded-full bg-[#1c1c1c] text-white shadow-lg transition-colors hover:bg-[#2b2a2a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             >
               <X className="size-5" />
@@ -181,7 +185,7 @@ const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
 
             <div className="pointer-events-none absolute inset-x-0 bottom-4 z-1100 flex flex-col items-center gap-2">
               {locateError && (
-                <span className="rounded-full bg-[#1c1c1c] px-3 py-1 text-xs text-red-300">{locateError}</span>
+                <span className="rounded-full bg-[#1c1c1c] px-3 py-1 text-xs text-red-300">{t(`address.${locateError}`)}</span>
               )}
               <button
                 type="button"
@@ -190,7 +194,7 @@ const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
                 className="pointer-events-auto flex cursor-pointer items-center gap-2 rounded-full bg-[#1c1c1c] px-4 py-2.5 text-sm font-medium text-white shadow-lg transition-colors hover:bg-[#2b2a2a] disabled:cursor-wait disabled:opacity-70"
               >
                 <LocateFixed className={`size-4 ${locating ? "animate-spin" : ""}`} />
-                {locating ? "Определяем…" : "Определение местоположения"}
+                {locating ? t("address.locating") : t("address.locate")}
               </button>
             </div>
           </div>
