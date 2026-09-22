@@ -263,6 +263,7 @@ export interface UserInput {
   fullName: string
   phone: string
   password: string
+  avatarUrl?: string | null
 }
 
 export type UserPatch = Partial<UserInput>

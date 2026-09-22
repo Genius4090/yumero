@@ -12,6 +12,9 @@ export const uz: Dictionary = {
     empty: "Boʻsh",
     next: "Keyingi",
     prev: "Oldingi",
+    logout: "Chiqish",
+    logoutTitle: "Hisobdan chiqasizmi?",
+    logoutHint: "Istalgan vaqtda telefon raqami va parol bilan qayta kirishingiz mumkin.",
   },
   languages: {
     label: "Til",
@@ -37,6 +40,7 @@ export const uz: Dictionary = {
     bannerAlt: "Aksiya {n}",
   },
   categories: {
+    all: "Butun menyu",
     popular: "Mashhur",
     lavash: "Lavash",
     burgers: "Burgerlar",
@@ -219,6 +223,7 @@ export const uz: Dictionary = {
     },
   },
   profile: {
+    changePhoto: "Rasmni oʻzgartirish",
     namePlaceholder: "Ism Familiya",
     nameAria: "Toʻliq ism",
     saveName: "Ismni saqlash",
@@ -288,9 +293,6 @@ export const uz: Dictionary = {
   },
   admin: {
     title: "Boshqaruv paneli",
-    loginTitle: "Administrator kirishi",
-    loginHint: "Administrator raqami va parolidan foydalaning",
-    notAdmin: "Bu hisobda administrator huquqi yoʻq",
     nav: {
       dashboard: "Umumiy",
       products: "Taomlar",
@@ -406,6 +408,10 @@ export const uz: Dictionary = {
       newPassword: "Yangi parol",
       newPasswordHint: "Oʻzgartirmaslik uchun boʻsh qoldiring",
       registered: "Roʻyxatdan oʻtgan",
+      photo: "Rasm",
+      view: "Koʻrinish",
+      viewTable: "Jadval",
+      viewCards: "Kartochkalar",
     },
     orders: {
       all: "Barchasi",

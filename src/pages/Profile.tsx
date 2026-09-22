@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState, type FormEvent } from "react"
 import { Link, Navigate, useNavigate } from "react-router-dom"
-import { Check, ChevronRight, KeyRound, Languages, LayoutDashboard, LogOut, Pencil, Phone, Settings, X } from "lucide-react"
-import { Avatar } from "@/assets/images"
+import { Camera, Check, ChevronRight, KeyRound, Languages, LayoutDashboard, Loader2, LogOut, Pencil, Phone, Settings, UserRound, X } from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
 import { useSettings } from "@/context/SettingsContext"
 import { LOCALES, LOCALE_NAMES } from "@/i18n"
 import { useI18n } from "@/i18n/useI18n"
-import { apiFetch } from "@/lib/api"
+import { apiFetch, mediaUrl } from "@/lib/api"
 import { errorKey } from "@/lib/apiErrors"
 import { Button } from "@/components"
 import { FormError, PasswordField } from "@/components/auth/Fields"
+import LogoutDialog from "@/components/LogoutDialog"
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { Switch } from "@/components/ui/switch"
 
@@ -21,6 +21,59 @@ const formatPhone = (phone: string) => {
 
 const inputClass =
   "w-full rounded-full bg-[#2b2a2a] px-4 py-3 text-white outline-none transition-shadow placeholder:text-[#7a7a7a] focus:ring-2 focus:ring-white/40"
+
+/* ---------- profile photo ---------- */
+
+/** Round avatar; hovering dims it and reveals a camera button that uploads a new photo. */
+const AvatarEditor = ({ url, onChange }: { url: string | null; onChange: (file: File | null) => Promise<void> }) => {
+  const { t } = useI18n()
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const photo = mediaUrl(url)
+
+  const pick = async (file: File | undefined) => {
+    if (!file) return
+    setBusy(true)
+    setError(null)
+    try {
+      await onChange(file)
+    } catch (err) {
+      setError(t(errorKey(err)))
+    } finally {
+      setBusy(false)
+      if (inputRef.current) inputRef.current.value = ""
+    }
+  }
+
+  return (
+    <div className="flex shrink-0 flex-col items-center gap-2">
+      <div className="group relative size-28">
+        {photo ? (
+          <img src={photo} alt="" className="size-full rounded-full object-cover ring-4 ring-[#2b2a2a]" draggable={false} />
+        ) : (
+          <span className="grid size-full place-items-center rounded-full bg-[#2b2a2a] text-[#8a8a8a] ring-4 ring-[#2b2a2a]">
+            <UserRound className="size-12" />
+          </span>
+        )}
+        <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={busy}
+          aria-label={t("profile.changePhoto")}
+          title={t("profile.changePhoto")}
+          className={`absolute inset-0 grid cursor-pointer place-items-center rounded-full bg-black/55 text-white transition-opacity duration-200 focus-visible:opacity-100 focus-visible:outline-none ${
+            busy ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          }`}
+        >
+          {busy ? <Loader2 className="size-7 animate-spin" /> : <Camera className="size-7" />}
+        </button>
+      </div>
+      {error && <p className="max-w-40 text-center text-xs text-[#ff9b9b]">{error}</p>}
+    </div>
+  )
+}
 
 /* ---------- inline name editor ---------- */
 
@@ -246,10 +299,11 @@ const LanguageRow = () => {
 
 const Profile = () => {
   const { t } = useI18n()
-  const { user, status, isAdmin, logout, updateUser } = useAuth()
+  const { user, status, isAdmin, logout, updateUser, setAvatar } = useAuth()
   const navigate = useNavigate()
   const [passwordOpen, setPasswordOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [logoutOpen, setLogoutOpen] = useState(false)
 
   if (status === "loading") return <section className="min-h-screen py-30" />
   if (!user) return <Navigate to="/home" replace />
@@ -267,7 +321,7 @@ const Profile = () => {
       <div className="mx-auto w-full max-w-3xl px-6">
         <div className="rounded-3xl bg-[#1c1c1c] p-8">
           <div className="flex items-center gap-6">
-            <img src={Avatar} alt="" className="size-28 shrink-0 rounded-full object-cover ring-4 ring-[#2b2a2a]" draggable={false} />
+            <AvatarEditor url={user.avatarUrl} onChange={setAvatar} />
             <div className="min-w-0 flex-1">
               <NameEditor value={user.fullName} onSave={(fullName) => updateUser({ fullName })} />
               <p className="mt-2 flex items-center gap-2 text-[#c4c4c4]">
@@ -279,7 +333,7 @@ const Profile = () => {
 
           <div className="mt-8 flex flex-col gap-3">
             {isAdmin && (
-              <Link to="/admin" className={`${rowClass} text-[#77FF00]`}>
+              <Link to="/dashboard" className={rowClass}>
                 <span className="grid size-10 place-items-center rounded-full bg-[#1c1c1c]">
                   <LayoutDashboard className="size-5" />
                 </span>
@@ -306,7 +360,7 @@ const Profile = () => {
 
             <LanguageRow />
 
-            <button type="button" onClick={handleLogout} className={`${rowClass} text-[#ff6b6b]`}>
+            <button type="button" onClick={() => setLogoutOpen(true)} className={`${rowClass} text-[#ff6b6b]`}>
               <span className="grid size-10 place-items-center rounded-full bg-[#1c1c1c]">
                 <LogOut className="size-5" />
               </span>
@@ -319,6 +373,7 @@ const Profile = () => {
 
       <ChangePasswordModal open={passwordOpen} onOpenChange={setPasswordOpen} />
       <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <LogoutDialog open={logoutOpen} onOpenChange={setLogoutOpen} onConfirm={handleLogout} />
     </section>
   )
 }

@@ -116,6 +116,7 @@ export interface adminUserType {
   phone: string
   fullName: string
   role: userRole
+  avatarUrl: string | null
   telegramLinked: boolean
   createdAt: string
   ordersCount: number
@@ -144,5 +145,7 @@ export interface AuthUser {
   phone: string
   fullName: string
   role: userRole
+  /** "/uploads/<file>" or null; render through mediaUrl() */
+  avatarUrl: string | null
   telegramLinked: boolean
 }

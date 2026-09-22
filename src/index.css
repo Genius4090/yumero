@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -61,6 +62,8 @@
   --font-heading: var(--font-sans);
   /* main site font (loaded from Google Fonts at the top of this file) */
   --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  /* "Yumero" wordmark (Lobster, loaded from Google Fonts at the top of this file) */
+  --font-logo: "Lobster", cursive;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

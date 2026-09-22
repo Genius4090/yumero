@@ -1,11 +1,14 @@
 import type { ReactNode } from "react"
-import { Navigate, useLocation } from "react-router-dom"
+import { Navigate } from "react-router-dom"
 import { useAuth } from "@/context/AuthContext"
 
-/** Renders children only for an authenticated ADMIN; everyone else goes to the admin login. */
+/**
+ * Renders children only for an authenticated ADMIN / SUPERADMIN.
+ * There is no separate admin login: everyone else is sent to the site, where the normal
+ * login form brings staff accounts straight to the panel.
+ */
 const RequireAdmin = ({ children }: { children: ReactNode }) => {
   const { status, isAdmin } = useAuth()
-  const location = useLocation()
 
   if (status === "loading") {
     return (
@@ -14,7 +17,7 @@ const RequireAdmin = ({ children }: { children: ReactNode }) => {
       </div>
     )
   }
-  if (!isAdmin) return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />
+  if (!isAdmin) return <Navigate to="/home" replace />
   return <>{children}</>
 }
 

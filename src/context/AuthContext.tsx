@@ -2,7 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import type { AuthUser } from "@/@types"
-import { apiFetch, refreshSession, tokenStore } from "@/lib/api"
+import { apiFetch, refreshSession, removeAvatar, tokenStore, uploadAvatar } from "@/lib/api"
 
 export type AuthStatus = "loading" | "guest" | "authed"
 
@@ -22,6 +22,8 @@ interface AuthContextValue {
   setSession: (session: Session) => void
   logout: () => Promise<void>
   updateUser: (patch: { fullName: string }) => Promise<void>
+  /** Upload a new profile photo (or remove it with null). */
+  setAvatar: (file: File | null) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -73,6 +75,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(next)
   }, [])
 
+  const setAvatar = useCallback(async (file: File | null) => {
+    const next = file ? await uploadAvatar(file) : await removeAvatar()
+    setUser(next)
+  }, [])
+
   return (
     <AuthContext.Provider
       value={{
@@ -83,6 +90,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession,
         logout,
         updateUser,
+        setAvatar,
       }}
     >
       {children}

@@ -9,7 +9,6 @@ import { CartProvider } from "./context/CartContext";
 import { AddressProvider } from "./context/AddressContext";
 import { OrdersProvider } from "./context/OrdersContext";
 import AdminLayout from "./admin/AdminLayout";
-import AdminLogin from "./admin/AdminLogin";
 import RequireAdmin from "./admin/RequireAdmin";
 import RequireSuperAdmin from "./admin/RequireSuperAdmin";
 import { BannersPage, CategoriesPage, Dashboard, OrdersPage, ProductsPage, PromoCodesPage, SettingsPage, StaffPage, UsersPage } from "./admin/pages";
@@ -56,11 +55,7 @@ const router = createBrowserRouter([
     ]
   },
   {
-    path: "/admin/login",
-    element: <AdminLogin />,
-  },
-  {
-    path: "/admin",
+    path: "/dashboard",
     element: (
       <RequireAdmin>
         <AdminLayout />
@@ -83,7 +78,7 @@ const router = createBrowserRouter([
         ),
       },
       { path: "settings", element: <SettingsPage /> },
-      { path: "*", element: <Navigate to="/admin" replace /> },
+      { path: "*", element: <Navigate to="/dashboard" replace /> },
     ],
   },
 ]);

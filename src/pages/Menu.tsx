@@ -4,13 +4,16 @@ import type { productType } from "@/@types"
 import { useCategories, useProducts } from "@/api/hooks"
 import { FoodCard, ProductModal, SearchBar } from "@/components"
 import { Skeleton } from "@/components/ui/skeleton"
-import { MENU_TAB_KEY, POPULAR_TAB_ID } from "@/data/categories"
+import { ALL_TAB_ID, MENU_TAB_KEY, POPULAR_TAB_ID } from "@/data/categories"
 import { useI18n } from "@/i18n/useI18n"
 import { pickText } from "@/lib/localized"
 
 const readStoredTab = () => {
   try {
-    return Number(localStorage.getItem(MENU_TAB_KEY)) || POPULAR_TAB_ID
+    const stored = localStorage.getItem(MENU_TAB_KEY)
+    if (stored === null) return POPULAR_TAB_ID
+    const id = Number(stored)
+    return Number.isFinite(id) ? id : POPULAR_TAB_ID
   } catch {
     return POPULAR_TAB_ID
   }
@@ -44,15 +47,29 @@ const Menu = () => {
   const searching = search.length > 0
 
   const categories = useCategories()
+  const showAll = activeId === ALL_TAB_ID
   const products = useProducts(
-    searching ? { search } : activeId === POPULAR_TAB_ID ? { popular: true } : { categoryId: activeId }
+    searching ? { search } : activeId === POPULAR_TAB_ID ? { popular: true } : showAll ? {} : { categoryId: activeId }
   )
 
   const tabs = useMemo(
-    () => [{ id: POPULAR_TAB_ID, name: t("categories.popular") }, ...(categories.data ?? []).map((c) => ({ id: c.id, name: pickText(c.name, locale) }))],
+    () => [
+      { id: POPULAR_TAB_ID, name: t("categories.popular") },
+      { id: ALL_TAB_ID, name: t("categories.all") },
+      ...(categories.data ?? []).map((c) => ({ id: c.id, name: pickText(c.name, locale) })),
+    ],
     [categories.data, t, locale]
   )
   const active = tabs.find((c) => c.id === activeId) ?? tabs[0]
+
+  // "All": one section per category (in the categories' own order), each with its heading
+  const sections = useMemo(() => {
+    const items = products.data?.items ?? []
+    if (!showAll || searching) return []
+    return (categories.data ?? [])
+      .map((c) => ({ id: c.id, name: pickText(c.name, locale), items: items.filter((p) => p.categoryId === c.id) }))
+      .filter((s) => s.items.length > 0)
+  }, [products.data, categories.data, showAll, searching, locale])
 
   const selectTab = (id: number) => {
     setActiveId(id)
@@ -91,7 +108,12 @@ const Menu = () => {
           <SearchBar value={query} onChange={setQuery} extraClass="w-[300px]!" />
         </div>
 
-        <h2 className="mt-10 mb-6 text-2xl font-semibold">{searching ? `${t("common.search")}: ${search}` : active.name}</h2>
+        {/* "All" has a heading per category instead of one page title */}
+        {showAll && !searching ? (
+          <div className="mt-10" />
+        ) : (
+          <h2 className="mt-10 mb-6 text-2xl font-semibold">{searching ? `${t("common.search")}: ${search}` : active.name}</h2>
+        )}
 
         {products.isError ? (
           <div className="flex flex-col items-start gap-3 rounded-2xl bg-[#1c1c1c] p-6">
@@ -111,6 +133,23 @@ const Menu = () => {
           </ul>
         ) : items.length === 0 ? (
           <p className="rounded-2xl bg-[#1c1c1c] p-6 text-[#c4c4c4]">{searching ? t("menu.nothingFound", { query: search }) : t("menu.empty")}</p>
+        ) : showAll && !searching ? (
+          <div className={`flex flex-col gap-12 transition-opacity ${products.isFetching ? "opacity-70" : ""}`}>
+            {sections.map((section) => (
+              <section key={section.id} aria-labelledby={`menu-section-${section.id}`}>
+                <h3 id={`menu-section-${section.id}`} className="mb-6 text-2xl font-semibold">
+                  {section.name}
+                </h3>
+                <ul className="grid grid-cols-4 gap-6">
+                  {section.items.map((item) => (
+                    <li key={item.id}>
+                      <FoodCard product={item} onClick={setSelected} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
         ) : (
           <ul className={`grid grid-cols-4 gap-6 transition-opacity ${products.isFetching ? "opacity-70" : ""}`}>
             {items.map((item) => (

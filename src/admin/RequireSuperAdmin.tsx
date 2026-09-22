@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext"
 /** Inside the admin area: pages only the SUPERADMIN may open (e.g. Staff). */
 const RequireSuperAdmin = ({ children }: { children: ReactNode }) => {
   const { isSuperAdmin } = useAuth()
-  if (!isSuperAdmin) return <Navigate to="/admin" replace />
+  if (!isSuperAdmin) return <Navigate to="/dashboard" replace />
   return <>{children}</>
 }
 

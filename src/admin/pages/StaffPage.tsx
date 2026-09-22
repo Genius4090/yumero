@@ -8,7 +8,7 @@ import { useDeleteStaff, useSaveStaff, useStaff } from "../api"
 import AccountDialog from "../components/AccountDialog"
 import { formatPhone } from "../format"
 import { useToast } from "../toast"
-import { Badge, Btn, DeleteButton, PageHeader, Pagination, Table } from "../ui"
+import { AvatarThumb, Badge, Btn, DeleteButton, PageHeader, Pagination, Table } from "../ui"
 import { PAGE_SIZE, usePagination } from "../usePagination"
 
 const StaffPage = () => {
@@ -62,8 +62,13 @@ const StaffPage = () => {
             return (
               <tr key={u.id}>
                 <td className="font-medium">
-                  {u.fullName || "—"}
-                  {isMe && <span className="ml-2 text-xs text-[#8a8a8a]">({t("admin.staff.you")})</span>}
+                  <span className="flex items-center gap-3">
+                    <AvatarThumb url={u.avatarUrl} />
+                    <span>
+                      {u.fullName || "—"}
+                      {isMe && <span className="ml-2 text-xs text-[#8a8a8a]">({t("admin.staff.you")})</span>}
+                    </span>
+                  </span>
                 </td>
                 <td className="text-[#c4c4c4]">{formatPhone(u.phone)}</td>
                 <td>{isSuper ? <Badge tone="amber">{t("admin.roles.SUPERADMIN")}</Badge> : <Badge tone="blue">{t("admin.roles.ADMIN")}</Badge>}</td>

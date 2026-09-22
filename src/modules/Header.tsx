@@ -1,8 +1,8 @@
 import { Link, NavLink } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { ShoppingBag } from "lucide-react"
-import { WebsiteLogo } from "../assets/images"
 import { AddressSelect, AuthModal, Button, CartSidebar, HeaderSearch, UserMenu } from "../components"
+import Wordmark from "../components/Wordmark"
 import { useAuth } from "../context/AuthContext"
 import { useCart } from "../context/CartContext"
 import { formatPrice } from "../lib/format"
@@ -35,8 +35,9 @@ const Header = () => {
     >
       <div className="grid grid-cols-[1fr_auto_1fr] items-center px-6 py-4">
         <div className="flex items-center gap-6">
-          <Link to="/home" aria-label={t("nav.logoAria")} className="shrink-0">
-            <img src={WebsiteLogo} alt="Yumero" className="h-9 w-auto object-contain" />
+          {/* same 44px row height as the address select / cart button so the wordmark sits on their centre line */}
+          <Link to="/home" aria-label={t("nav.logoAria")} className="flex h-11 shrink-0 items-center">
+            <Wordmark className="text-3xl" />
           </Link>
           <AddressSelect />
         </div>

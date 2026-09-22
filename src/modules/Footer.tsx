@@ -2,12 +2,12 @@ import { useState, type FormEvent } from "react";
 import {
   FooterBurger,
   FooterFries,
-  FooterLogo,
   IconInstagram,
   IconTelegram,
   IconTiktok,
   IconVk,
 } from "../assets/images";
+import Wordmark from "../components/Wordmark";
 import { useI18n } from "../i18n/useI18n";
 import { useSettings, useSubscribeNewsletter } from "../api/hooks";
 
@@ -76,7 +76,7 @@ const Footer = () => {
           </div>
 
           <div className="mx-auto flex max-w-xl flex-col items-center py-20 text-center">
-            <img src={FooterLogo} alt="Yumero" className="h-20 w-auto" />
+            <Wordmark className="text-6xl" />
 
             <p className="mt-8 max-w-lg font-semibold leading-relaxed text-[#e6e6e6]">
               {t("footer.tagline")}

@@ -1,5 +1,5 @@
 import { useRef, useState, type ComponentProps, type ReactNode } from "react"
-import { Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ImagePlus, Trash2, Upload } from "lucide-react"
+import { Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ImagePlus, Trash2, Upload, UserRound } from "lucide-react"
 import { Select as SelectPrimitive } from "radix-ui"
 import type { LocalizedText } from "@/@types"
 import { LOCALES, LOCALE_NAMES } from "@/i18n"
@@ -248,6 +248,16 @@ export const Badge = ({ children, tone = "neutral" }: { children: ReactNode; ton
   return <span className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap", tones[tone])}>{children}</span>
 }
 
+/** Small round profile photo for tables and the sidebar; falls back to a person icon. */
+export const AvatarThumb = ({ url, className }: { url: string | null | undefined; className?: string }) => {
+  const src = mediaUrl(url)
+  return (
+    <span className={cn("grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[#2b2a2a]", className)}>
+      {src ? <img src={src} alt="" className="size-full object-cover" draggable={false} /> : <UserRound className="size-4 text-[#8a8a8a]" />}
+    </span>
+  )
+}
+
 export const Card = ({ className, ...props }: ComponentProps<"div">) => <div className={cn("rounded-2xl bg-[#1c1c1c] p-6", className)} {...props} />
 
 export const PageHeader = ({ title, children, className }: { title: string; children?: ReactNode; className?: string }) => (
@@ -348,8 +358,8 @@ export const LocalizedInput = ({
   </fieldset>
 )
 
-/** Image picker that uploads to /api/admin/upload and returns the stored URL. */
-export const ImageUpload = ({ value, onChange, aspect = "square" }: { value: string | null; onChange: (url: string | null) => void; aspect?: "square" | "wide" }) => {
+/** Image picker that uploads to /api/admin/upload and returns the stored URL. "avatar" = round profile photo. */
+export const ImageUpload = ({ value, onChange, aspect = "square" }: { value: string | null; onChange: (url: string | null) => void; aspect?: "square" | "wide" | "avatar" }) => {
   const { t } = useI18n()
   const inputRef = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
@@ -372,14 +382,22 @@ export const ImageUpload = ({ value, onChange, aspect = "square" }: { value: str
 
   const src = mediaUrl(value)
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn("flex gap-2", aspect === "avatar" ? "items-center gap-4" : "flex-col")}>
       <div
         className={cn(
-          "grid place-items-center overflow-hidden rounded-xl bg-[#2b2a2a]",
-          aspect === "square" ? "aspect-square w-40" : "aspect-16/10 w-full max-w-md"
+          "grid shrink-0 place-items-center overflow-hidden bg-[#2b2a2a]",
+          aspect === "square" && "aspect-square w-40 rounded-xl",
+          aspect === "wide" && "aspect-16/10 w-full max-w-md rounded-xl",
+          aspect === "avatar" && "size-20 rounded-full"
         )}
       >
-        {src ? <img src={src} alt="" className="h-full w-full object-contain" /> : <ImagePlus className="size-8 text-[#8a8a8a]" />}
+        {src ? (
+          <img src={src} alt="" className={cn("h-full w-full", aspect === "avatar" ? "object-cover" : "object-contain")} />
+        ) : aspect === "avatar" ? (
+          <UserRound className="size-8 text-[#8a8a8a]" />
+        ) : (
+          <ImagePlus className="size-8 text-[#8a8a8a]" />
+        )}
       </div>
       <div className={cn("flex gap-2", aspect === "square" ? "w-40 flex-col" : "flex-wrap items-center")}>
         <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />

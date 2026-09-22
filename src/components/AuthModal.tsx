@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react"
+import { useNavigate } from "react-router-dom"
 import { AnimatePresence, motion } from "motion/react"
 import { ArrowLeft, Send } from "lucide-react"
 import type { AuthUser } from "@/@types"
@@ -45,6 +46,7 @@ const copyKey: Record<AuthMode, Record<Step, "login" | "register" | "code" | "fo
 const AuthModal = ({ children, defaultOpen = false }: { children?: ReactNode; defaultOpen?: boolean }) => {
   const { t } = useI18n()
   const { setSession } = useAuth()
+  const navigate = useNavigate()
   const [open, setOpen] = useState(defaultOpen)
   const [mode, setMode] = useState<AuthMode>("login")
   const [step, setStep] = useState<Step>("form")
@@ -108,6 +110,13 @@ const AuthModal = ({ children, defaultOpen = false }: { children?: ReactNode; de
       setCodeReady(false)
       setLinkExpired(false)
     }
+  }
+
+  /** One login for everyone: staff accounts land in the admin panel, customers stay where they are. */
+  const finishLogin = (session: { user: AuthUser; accessToken: string }) => {
+    setSession(session)
+    handleOpenChange(false)
+    if (session.user.role === "ADMIN" || session.user.role === "SUPERADMIN") navigate("/dashboard")
   }
 
   const handleOpenChange = (next: boolean) => {
@@ -194,8 +203,7 @@ const AuthModal = ({ children, defaultOpen = false }: { children?: ReactNode; de
       if (!phoneOk || !password) return
       return run(async () => {
         const session = await apiFetch<{ user: AuthUser; accessToken: string }>("/api/auth/login", { method: "POST", body: { phone, password }, auth: false })
-        setSession(session)
-        handleOpenChange(false)
+        finishLogin(session)
       })
     }
 
@@ -215,8 +223,7 @@ const AuthModal = ({ children, defaultOpen = false }: { children?: ReactNode; de
             body: { verificationId: verification.verificationId, code },
             auth: false,
           })
-          setSession(session)
-          handleOpenChange(false)
+          finishLogin(session)
         })
       }
       return
@@ -246,8 +253,7 @@ const AuthModal = ({ children, defaultOpen = false }: { children?: ReactNode; de
       return run(async () => {
         await apiFetch<void>("/api/auth/forgot/reset", { method: "POST", body: { resetToken, password: newPassword }, auth: false })
         const session = await apiFetch<{ user: AuthUser; accessToken: string }>("/api/auth/login", { method: "POST", body: { phone, password: newPassword }, auth: false })
-        setSession(session)
-        handleOpenChange(false)
+        finishLogin(session)
       })
     }
   }

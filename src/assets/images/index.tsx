@@ -1,8 +1,5 @@
-import WebsiteLogo from "./websiteLogo.png"
 import HeaderAction from "./rgb.png"
-import CarouselImg from "./carouselImg.png"
 import MenuItemImg from "./menuItem.png"
-import Avatar from "./avatar.jpg"
 import ProductBurgerSet from "./productBurgerSet.svg"
 
 // Home carousel banners (16:9 promo posters)
@@ -19,14 +16,13 @@ export const HOME_BANNERS = [BannerBurgerKing, BannerNordsee, BannerKfc, BannerD
 // Footer
 import FooterBurger from "./footer/burger.svg"
 import FooterFries from "./footer/fries.svg"
-import FooterLogo from "./footer/logo.svg"
 import IconInstagram from "./footer/instagram.svg"
 import IconTiktok from "./footer/tiktok.svg"
 import IconTelegram from "./footer/telegram.svg"
 import IconVk from "./footer/vk.svg"
 
 export {
-  WebsiteLogo, HeaderAction, CarouselImg, MenuItemImg, Avatar, ProductBurgerSet,
+  HeaderAction, MenuItemImg, ProductBurgerSet,
   BannerBurgerKing, BannerNordsee, BannerKfc, BannerDeanAndDavid, BannerLocoChicken, BannerStarbucks,
-  FooterBurger, FooterFries, FooterLogo, IconInstagram, IconTiktok, IconTelegram, IconVk,
+  FooterBurger, FooterFries, IconInstagram, IconTiktok, IconTelegram, IconVk,
 }

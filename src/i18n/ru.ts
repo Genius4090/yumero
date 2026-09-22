@@ -12,6 +12,9 @@ export const ru = {
     empty: "Пусто",
     next: "Вперёд",
     prev: "Назад",
+    logout: "Выйти",
+    logoutTitle: "Выйти из аккаунта?",
+    logoutHint: "Вы сможете снова войти в любой момент по номеру телефона и паролю.",
   },
   languages: {
     label: "Язык",
@@ -37,6 +40,7 @@ export const ru = {
     bannerAlt: "Акция {n}",
   },
   categories: {
+    all: "Всё меню",
     popular: "Популярное",
     lavash: "Лаваш",
     burgers: "Бургеры",
@@ -219,6 +223,7 @@ export const ru = {
     },
   },
   profile: {
+    changePhoto: "Изменить фото",
     namePlaceholder: "Имя Фамилия",
     nameAria: "Полное имя",
     saveName: "Сохранить имя",
@@ -288,9 +293,6 @@ export const ru = {
   },
   admin: {
     title: "Панель управления",
-    loginTitle: "Вход для администратора",
-    loginHint: "Используйте номер и пароль администратора",
-    notAdmin: "У этого аккаунта нет прав администратора",
     nav: {
       dashboard: "Обзор",
       products: "Блюда",
@@ -406,6 +408,10 @@ export const ru = {
       newPassword: "Новый пароль",
       newPasswordHint: "Оставьте пустым, чтобы не менять",
       registered: "Регистрация",
+      photo: "Фото",
+      view: "Вид",
+      viewTable: "Таблица",
+      viewCards: "Карточки",
     },
     orders: {
       all: "Все",

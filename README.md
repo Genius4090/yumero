@@ -1,6 +1,6 @@
 # Yumero frontend
 
-Customer site + admin panel (`/admin`) for the Yumero food delivery service. React 19, Vite, TypeScript, Tailwind 4, React Query.
+Customer site + admin panel (`/dashboard`, opened automatically after an admin logs in) for the Yumero food delivery service. React 19, Vite, TypeScript, Tailwind 4, React Query.
 
 The API lives in the separate **yumero-backend** repo, which also contains the production Docker Compose stack (Postgres + API + Caddy) and the deploy guide. In production this repo is built by its `Dockerfile` into a Caddy image; the backend's `docker-compose.yml` expects it checked out next to the backend folder (`../yumero-frontend`).
 
@@ -27,7 +27,7 @@ Scripts: `npm run build` (typecheck + production build), `npm run lint`, `npm ru
 
 ```
 src/api/hooks.ts        React Query hooks for the public API
-src/admin/              admin panel (login, layout, pages, admin API hooks)
+src/admin/              admin panel (layout, pages, admin API hooks)
 src/lib/api.ts          fetch wrapper: bearer token, refresh-on-401, typed ApiError
 src/lib/localized.ts    pickText(): choose ru/en/uz from API texts
 src/context/            auth, cart (local), addresses, orders, settings

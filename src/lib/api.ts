@@ -129,3 +129,11 @@ export const uploadFile = (file: File) => {
   form.append("file", file)
   return apiFetch<{ url: string; size: number }>("/api/admin/upload", { method: "POST", body: form })
 }
+
+/** Profile photo of the logged-in user; returns the updated user. */
+export const uploadAvatar = (file: File) => {
+  const form = new FormData()
+  form.append("file", file)
+  return apiFetch<AuthUser>("/api/auth/me/avatar", { method: "POST", body: form })
+}
+export const removeAvatar = () => apiFetch<AuthUser>("/api/auth/me/avatar", { method: "DELETE" })

@@ -7,7 +7,7 @@ import { useAdminUsers, useDeleteUser, useSaveUser } from "../api"
 import AccountDialog from "../components/AccountDialog"
 import { formatPhone } from "../format"
 import { useToast } from "../toast"
-import { Badge, Btn, DeleteButton, Input, PageHeader, Pagination, Table } from "../ui"
+import { AvatarThumb, Badge, Btn, DeleteButton, Input, PageHeader, Pagination, Table } from "../ui"
 import { PAGE_SIZE } from "../usePagination"
 
 const UsersPage = () => {
@@ -76,12 +76,17 @@ const UsersPage = () => {
           {users.data?.items.map((u) => (
             <tr key={u.id}>
               <td className="font-medium">
-                {u.fullName || "—"}
-                {u.telegramLinked && (
-                  <span className="ml-2">
-                    <Badge tone="blue">Telegram</Badge>
+                <span className="flex items-center gap-3">
+                  <AvatarThumb url={u.avatarUrl} />
+                  <span>
+                    {u.fullName || "—"}
+                    {u.telegramLinked && (
+                      <span className="ml-2">
+                        <Badge tone="blue">Telegram</Badge>
+                      </span>
+                    )}
                   </span>
-                )}
+                </span>
               </td>
               <td className="text-[#c4c4c4]">{formatPhone(u.phone)}</td>
               <td className="text-[#c4c4c4]">{u.ordersCount}</td>

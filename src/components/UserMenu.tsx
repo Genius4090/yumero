@@ -1,18 +1,21 @@
 import { Link } from "react-router-dom"
-import { Avatar } from "@/assets/images"
+import { UserRound } from "lucide-react"
+import { useAuth } from "@/context/AuthContext"
 import { useI18n } from "@/i18n/useI18n"
+import { mediaUrl } from "@/lib/api"
 
-/** Round avatar in the header; opens the profile page. */
+/** Round avatar in the header; opens the profile page. Shows a person icon until a photo is uploaded. */
 const UserMenu = () => {
   const { t } = useI18n()
+  const { user } = useAuth()
+  const photo = mediaUrl(user?.avatarUrl)
   return (
     <Link
       to="/profile"
       aria-label={t("nav.profile")}
-      className="block size-11 shrink-0 overflow-hidden rounded-full ring-2 ring-transparent transition-shadow hover:ring-white/30 focus-visible:outline-none focus-visible:ring-white/60"
+      className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-[#2b2a2a] text-[#c4c4c4] ring-2 ring-transparent transition-shadow hover:ring-white/30 focus-visible:outline-none focus-visible:ring-white/60"
     >
-      {/* The photo is ~16x larger than this circle; a sub-pixel blur hides the downscaling aliasing. */}
-      <img src={Avatar} alt="" className="size-full object-cover blur-[0.7px]" draggable={false} />
+      {photo ? <img src={photo} alt="" className="size-full object-cover" draggable={false} /> : <UserRound className="size-5" />}
     </Link>
   )
 }

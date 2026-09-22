@@ -12,6 +12,9 @@ export const en: Dictionary = {
     empty: "Empty",
     next: "Next",
     prev: "Previous",
+    logout: "Log out",
+    logoutTitle: "Log out?",
+    logoutHint: "You can log back in at any time with your phone number and password.",
   },
   languages: {
     label: "Language",
@@ -37,6 +40,7 @@ export const en: Dictionary = {
     bannerAlt: "Promo {n}",
   },
   categories: {
+    all: "All",
     popular: "Popular",
     lavash: "Lavash",
     burgers: "Burgers",
@@ -219,6 +223,7 @@ export const en: Dictionary = {
     },
   },
   profile: {
+    changePhoto: "Change photo",
     namePlaceholder: "First Last",
     nameAria: "Full name",
     saveName: "Save name",
@@ -288,9 +293,6 @@ export const en: Dictionary = {
   },
   admin: {
     title: "Admin panel",
-    loginTitle: "Admin login",
-    loginHint: "Use the administrator phone number and password",
-    notAdmin: "This account has no admin access",
     nav: {
       dashboard: "Overview",
       products: "Dishes",
@@ -406,6 +408,10 @@ export const en: Dictionary = {
       newPassword: "New password",
       newPasswordHint: "Leave empty to keep the current one",
       registered: "Registered",
+      photo: "Photo",
+      view: "View",
+      viewTable: "Table",
+      viewCards: "Cards",
     },
     orders: {
       all: "All",

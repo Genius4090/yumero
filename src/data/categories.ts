@@ -4,6 +4,8 @@
  */
 export const POPULAR_TAB_ID = 0
 export const POPULAR_TAB_COLOR = "#ff0099"
+/** Second virtual tab: every dish, grouped under its category heading. */
+export const ALL_TAB_ID = -1
 
 /** Home page grid: the selected category id is handed to the menu page via localStorage. */
 export const MENU_TAB_KEY = "menuId"
