@@ -366,7 +366,7 @@ export const ru = {
       empty: "Пока пусто",
       saved: "Сохранено",
       deleted: "Удалено",
-      upload: "Загрузить изображение",
+      upload: "Загрузить фото",
       uploading: "Загружаем…",
       removeImage: "Убрать",
       showing: "{from}–{to} из {total}",

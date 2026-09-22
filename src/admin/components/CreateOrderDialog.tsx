@@ -239,7 +239,7 @@ const CreateOrderDialog = ({ open, onOpenChange, onCreated }: { open: boolean; o
               <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-[#8a8a8a]" />
               <Input value={productQuery} onChange={(e) => setProductQuery(e.target.value)} placeholder={t("admin.orders.searchProducts")} className="pl-11" />
             </div>
-            <ul className="flex max-h-120 flex-col gap-2 overflow-y-auto pr-1 [scrollbar-color:#3a3939_transparent] [scrollbar-width:thin]">
+            <ul className="flex max-h-120 flex-col gap-2 overflow-y-auto pr-3 [scrollbar-color:#3a3939_transparent] [scrollbar-gutter:stable] [scrollbar-width:thin]">
               {productSearch.isPending && <li className="px-2 py-3 text-sm text-[#8a8a8a]">{t("admin.common.loading")}</li>}
               {!productSearch.isPending && availableProducts.length === 0 && <li className="px-2 py-3 text-sm text-[#8a8a8a]">{t("admin.common.empty")}</li>}
               {availableProducts.map((p) => (
@@ -272,8 +272,9 @@ const CreateOrderDialog = ({ open, onOpenChange, onCreated }: { open: boolean; o
             </div>
             <div className="rounded-2xl bg-[#161616] p-3">
               {lines.length === 0 && <p className="px-2 py-3 text-sm text-[#8a8a8a]">{t("admin.orders.noItems")}</p>}
-              {/* ~10 rows tall; longer orders scroll inside instead of stretching the dialog */}
-              <ul className="max-h-104 divide-y divide-white/5 overflow-y-auto pr-1 [scrollbar-color:#3a3939_transparent] [scrollbar-width:thin]">
+              {/* 6 rows tall (each row is 49px); longer orders scroll inside instead of stretching the dialog */}
+              {/* the scrollbar's gutter is always reserved, so rows don't shift when it appears */}
+              <ul className="max-h-74 divide-y divide-white/5 overflow-y-auto pr-3 [scrollbar-color:#3a3939_transparent] [scrollbar-gutter:stable] [scrollbar-width:thin]">
                 {lines.map((l) => (
                   <li key={l.product.id} className="flex items-center gap-3 py-2 text-sm">
                     <span className="min-w-0 flex-1 truncate">{pickText(l.product.name, locale)}</span>

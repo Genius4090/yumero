@@ -77,7 +77,7 @@ const UsersPage = () => {
             <tr key={u.id}>
               <td className="font-medium">
                 <span className="flex items-center gap-3">
-                  <AvatarThumb url={u.avatarUrl} />
+                  <AvatarThumb url={u.avatarUrl} name={u.fullName} />
                   <span>
                     {u.fullName || "—"}
                     {u.telegramLinked && (

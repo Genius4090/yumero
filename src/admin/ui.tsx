@@ -228,7 +228,7 @@ export const Btn = ({ variant = "ghost", size = "md", className, type = "button"
   <button
     type={type}
     className={cn(
-      "inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:cursor-not-allowed disabled:opacity-50",
+      "inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:cursor-not-allowed disabled:opacity-50",
       size === "sm" ? "h-8 px-3 text-sm" : "h-11 px-5 text-sm",
       btnVariants[variant],
       className
@@ -237,7 +237,8 @@ export const Btn = ({ variant = "ghost", size = "md", className, type = "button"
   />
 )
 
-export const Badge = ({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "green" | "red" | "amber" | "blue" }) => {
+/** `solid` = opaque dark pill for badges laid over photos or light backgrounds. */
+export const Badge = ({ children, tone = "neutral", solid = false }: { children: ReactNode; tone?: "neutral" | "green" | "red" | "amber" | "blue"; solid?: boolean }) => {
   const tones = {
     neutral: "bg-white/10 text-[#c4c4c4]",
     green: "bg-[#77FF00]/10 text-[#77FF00]",
@@ -245,15 +246,36 @@ export const Badge = ({ children, tone = "neutral" }: { children: ReactNode; ton
     amber: "bg-[#f5c400]/15 text-[#f5c400]",
     blue: "bg-[#4da3ff]/15 text-[#4da3ff]",
   }
-  return <span className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap", tones[tone])}>{children}</span>
+  const solidTones = {
+    neutral: "bg-[#1c1c1c] text-[#c4c4c4]",
+    green: "bg-[#1c1c1c] text-[#77FF00]",
+    red: "bg-[#1c1c1c] text-[#ff6b6b]",
+    amber: "bg-[#1c1c1c] text-[#f5c400]",
+    blue: "bg-[#1c1c1c] text-[#4da3ff]",
+  }
+  return (
+    <span className={cn("inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap", solid ? `${solidTones[tone]} shadow-md shadow-black/30` : tones[tone])}>
+      {children}
+    </span>
+  )
 }
 
-/** Small round profile photo for tables and the sidebar; falls back to a person icon. */
-export const AvatarThumb = ({ url, className }: { url: string | null | undefined; className?: string }) => {
+/** "Abdulboriy To'lqinov" -> "AT" */
+const initials = (name: string) =>
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("")
+
+/** Small round profile photo for tables and the sidebar; falls back to the person's initials, or a person icon. */
+export const AvatarThumb = ({ url, name, className }: { url: string | null | undefined; name?: string; className?: string }) => {
   const src = mediaUrl(url)
+  const text = name ? initials(name) : ""
   return (
-    <span className={cn("grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[#2b2a2a]", className)}>
-      {src ? <img src={src} alt="" className="size-full object-cover" draggable={false} /> : <UserRound className="size-4 text-[#8a8a8a]" />}
+    <span className={cn("grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-[#2b2a2a] text-xs font-semibold text-[#c4c4c4]", className)}>
+      {src ? <img src={src} alt="" className="size-full object-cover" draggable={false} /> : text || <UserRound className="size-4 text-[#8a8a8a]" />}
     </span>
   )
 }

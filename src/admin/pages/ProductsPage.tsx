@@ -324,7 +324,8 @@ const ProductsPage = () => {
                   </span>
                 </h2>
               )}
-              <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+              {/* as many ~300px cards per row as fit, instead of a few very wide ones */}
+              <ul className="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-4">
                 {section.items.map((p) => (
                   <li
                     key={p.id}
@@ -339,10 +340,14 @@ const ProductsPage = () => {
                       />
                       <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
                         {p.isPopular && (
-                          <Badge tone="amber">{t("admin.common.popular")}</Badge>
+                          <Badge tone="amber" solid>
+                            {t("admin.common.popular")}
+                          </Badge>
                         )}
                         {!p.isAvailable && (
-                          <Badge tone="red">{t("admin.common.inactive")}</Badge>
+                          <Badge tone="red" solid>
+                            {t("admin.common.inactive")}
+                          </Badge>
                         )}
                       </div>
                     </div>
