@@ -36,8 +36,9 @@ const HeaderSearch = () => {
       ref={rootRef as unknown as React.RefObject<HTMLFormElement>}
       onSubmit={submit}
       role="search"
+      // phones (< md): the open field takes over the whole header row instead of squeezing between the icons
       className={`relative flex h-11 items-center overflow-hidden rounded-full bg-[#2b2a2a] transition-[width] duration-300 ease-out ${
-        open ? "w-80" : "w-11"
+        open ? "z-10 w-80 max-md:fixed max-md:inset-x-4 max-md:top-4 max-md:w-auto" : "w-11"
       }`}
     >
       <input

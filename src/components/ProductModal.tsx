@@ -43,12 +43,12 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
       <DialogContent
         showCloseButton={false}
         aria-describedby={undefined}
-        className="w-120 max-w-[95vw] overflow-hidden rounded-2xl border-0 bg-[#1c1c1c] p-0"
+        className="max-w-120 overflow-x-hidden rounded-2xl border-0 bg-[#1c1c1c] p-0 sm:p-0"
       >
         {product && (
           <>
-            <div className="relative grid h-80 place-items-center bg-[#e9e5d9]">
-              <img src={mediaUrl(product.imageUrl) ?? ProductBurgerSet} alt={pickText(product.name, locale)} draggable={false} className="h-68 w-auto max-w-[90%] object-contain" />
+            <div className="relative grid h-56 place-items-center bg-[#e9e5d9] sm:h-80">
+              <img src={mediaUrl(product.imageUrl) ?? ProductBurgerSet} alt={pickText(product.name, locale)} draggable={false} className="h-44 w-auto max-w-[90%] object-contain sm:h-68" />
               <DialogClose
                 aria-label={t("common.close")}
                 className="absolute top-4 right-4 grid size-9 cursor-pointer place-items-center rounded-full bg-[#1c1c1c] text-white transition-colors hover:bg-[#3a3939] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
@@ -57,9 +57,9 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
               </DialogClose>
             </div>
 
-            <div className="flex flex-col gap-5 p-6 pt-5">
+            <div className="flex flex-col gap-5 p-5 pt-4 sm:p-6 sm:pt-5">
               <div>
-                <DialogTitle className="text-3xl">{pickText(product.name, locale)}</DialogTitle>
+                <DialogTitle className="text-2xl sm:text-3xl">{pickText(product.name, locale)}</DialogTitle>
                 <div className="mt-3 flex items-center gap-3">
                   <span className="text-xl font-semibold">{formatPrice(product.price)}</span>
                   {product.isPopular && (
@@ -70,16 +70,17 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
               <DialogDescription className="text-base text-white">{pickText(product.description, locale)}</DialogDescription>
 
-              <div className="mt-1 flex items-stretch gap-3">
-                <QuantityStepper value={inCart} min={0} onChange={handleQty} />
+              {/* stepper + cart button on one line at every width; phones drop the cart total so the label never wraps */}
+              <div className="mt-1 flex items-stretch gap-2 sm:gap-3">
+                <QuantityStepper value={inCart} min={0} onChange={handleQty} className="shrink-0" />
 
                 <button
                   type="button"
                   onClick={openCart}
-                  className="flex flex-1 cursor-pointer items-center justify-between gap-3 rounded-lg bg-[#ff0099] px-4 text-sm font-semibold whitespace-nowrap text-white transition-colors hover:bg-[#ff2bab] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                  className="flex min-w-0 flex-1 cursor-pointer items-center justify-center gap-3 rounded-lg bg-[#ff0099] px-3 text-sm font-semibold whitespace-nowrap text-white transition-colors hover:bg-[#ff2bab] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 max-[359px]:px-2.5 max-[359px]:text-xs sm:justify-between sm:px-4"
                 >
-                  <span>{t("product.goToCart")}</span>
-                  <span>{count > 0 ? formatPrice(subtotal) : t("common.empty")}</span>
+                  <span className="truncate">{t("product.goToCart")}</span>
+                  <span className="hidden sm:inline">{count > 0 ? formatPrice(subtotal) : t("common.empty")}</span>
                 </button>
               </div>
             </div>

@@ -38,24 +38,27 @@ const CancelOrderButton = ({ onCancel }: { onCancel: () => Promise<void> }) => {
 
   if (confirming) {
     return (
-      <div className="mt-6 flex items-center gap-3">
+      /* phones: question on top, the two buttons share a row below it */
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
         <p className="flex-1 text-base text-[#c4c4c4]">{t("orders.cancelConfirm")}</p>
-        <button
-          type="button"
-          onClick={() => setConfirming(false)}
-          disabled={busy}
-          className="cursor-pointer rounded-xl bg-[#2b2a2a] px-5 py-3 font-semibold text-white transition-colors hover:bg-[#3a3939] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-        >
-          {t("orders.cancelNo")}
-        </button>
-        <button
-          type="button"
-          onClick={confirm}
-          disabled={busy}
-          className="cursor-pointer rounded-xl bg-[#ee4242] px-5 py-3 font-semibold text-white transition-colors hover:bg-[#e74d4da4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:opacity-60"
-        >
-          {t("orders.cancelYes")}
-        </button>
+        <div className="grid grid-cols-2 gap-3 sm:flex">
+          <button
+            type="button"
+            onClick={() => setConfirming(false)}
+            disabled={busy}
+            className="cursor-pointer rounded-xl bg-[#2b2a2a] px-3 py-3 text-sm font-semibold whitespace-nowrap text-white transition-colors hover:bg-[#3a3939] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 sm:px-5 sm:text-base"
+          >
+            {t("orders.cancelNo")}
+          </button>
+          <button
+            type="button"
+            onClick={confirm}
+            disabled={busy}
+            className="cursor-pointer rounded-xl bg-[#ee4242] px-3 py-3 text-sm font-semibold whitespace-nowrap text-white transition-colors hover:bg-[#e74d4da4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:opacity-60 sm:px-5 sm:text-base"
+          >
+            {t("orders.cancelYes")}
+          </button>
+        </div>
       </div>
     )
   }
@@ -86,14 +89,14 @@ const OrderCard = ({ order, open, onToggle, onCancel }: { order: orderType; open
         onClick={onToggle}
         aria-expanded={open}
         aria-controls={`order-${order.id}-details`}
-        className="flex w-full cursor-pointer items-center gap-5 rounded-3xl p-8 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+        className="flex w-full cursor-pointer items-center gap-4 rounded-3xl p-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 sm:gap-5 sm:p-8"
       >
-        <span className="grid size-14 shrink-0 place-items-center rounded-full bg-[#2b2a2a]">
+        <span className="grid size-12 shrink-0 place-items-center rounded-full bg-[#2b2a2a] sm:size-14">
           {isDelivery ? <Truck className="size-6" /> : <Store className="size-6" />}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="flex flex-wrap items-center gap-3">
-            <span className="text-xl font-semibold">{t("order.number", { number: order.number })}</span>
+          <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className="text-lg font-semibold sm:text-xl">{t("order.number", { number: order.number })}</span>
             <OrderStatusBadge order={order} />
           </span>
           <span className="mt-1 block text-[#c4c4c4]">
@@ -104,7 +107,7 @@ const OrderCard = ({ order, open, onToggle, onCancel }: { order: orderType; open
       </button>
 
       {open && (
-        <div id={`order-${order.id}-details`} className="border-t border-[#3a3a3a] px-8 pt-8 pb-8">
+        <div id={`order-${order.id}-details`} className="border-t border-[#3a3a3a] px-5 py-6 sm:px-8 sm:py-8">
           <div className="flex flex-col gap-4">
             <p className={metaRowClass}>
               <MapPin className="size-5 shrink-0" />
@@ -203,8 +206,8 @@ const Orders = () => {
   // Guest: explain why there is nothing to show; the button opens the login modal
   if (!user) {
     return (
-      <section className="flex min-h-screen items-center justify-center py-30">
-        <div className="flex max-w-md flex-col items-center gap-4 rounded-3xl bg-[#1c1c1c] px-10 py-12 text-center">
+      <section className="flex min-h-screen items-center justify-center px-4 pt-24 pb-16 sm:py-30">
+        <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-3xl bg-[#1c1c1c] px-6 py-10 text-center sm:px-10 sm:py-12">
           <span className="grid size-16 place-items-center rounded-full bg-[#2b2a2a]">
             <LogIn className="size-7" />
           </span>
@@ -219,8 +222,8 @@ const Orders = () => {
   }
 
   return (
-    <section className="min-h-screen py-30">
-      <div className="mx-auto w-full max-w-3xl px-6">
+    <section className="min-h-screen pt-24 pb-16 sm:py-30">
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
         <h1 className="text-3xl font-semibold">{t("orders.title")}</h1>
         <p className="mt-1 text-[#c4c4c4]">{orders.length > 0 ? plural(orders.length, "order.orders") : t("orders.history")}</p>
 
@@ -230,7 +233,7 @@ const Orders = () => {
             <Skeleton className="h-28 rounded-3xl" />
           </div>
         ) : orders.length === 0 ? (
-          <div className="mt-8 flex flex-col items-center gap-4 rounded-3xl bg-[#1c1c1c] px-10 py-16 text-center">
+          <div className="mt-8 flex flex-col items-center gap-4 rounded-3xl bg-[#1c1c1c] px-6 py-12 text-center sm:px-10 sm:py-16">
             <span className="grid size-20 place-items-center rounded-full bg-[#2b2a2a]">
               <ShoppingBag className="size-9 text-[#c4c4c4]" />
             </span>

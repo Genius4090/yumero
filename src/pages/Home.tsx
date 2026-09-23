@@ -35,15 +35,17 @@ const Home = () => {
   const bannerItems = (banners.data ?? []).map((b) => ({ src: mediaUrl(b.imageUrl) ?? b.imageUrl, link: b.link }))
 
   return (
-    <section className="py-30 pb-20 min-h-screen">
+    <section className="min-h-screen pt-24 pb-16 sm:pt-30 sm:pb-20">
       <div className="flex flex-col items-center justify-center gap-10">
         <BannerCarousel items={bannerItems} loading={banners.isPending} />
 
-        <ul className="flex flex-wrap max-w-7xl gap-5 justify-center mt-10">
+        {/* phones: 2 / 3 equal columns; from md the original fixed 160px tiles that wrap and centre */}
+        {/* no side padding from md: seven 160px tiles + gaps need the full 1280px cap to sit on one line */}
+        <ul className="mt-10 grid w-full max-w-7xl grid-cols-2 gap-4 px-4 sm:grid-cols-3 md:flex md:flex-wrap md:justify-center md:gap-5 md:px-0">
           {categories.isPending
             ? Array.from({ length: 8 }, (_, i) => (
                 <li key={i} className="flex flex-col items-center gap-2">
-                  <Skeleton className="h-[120px] w-[160px] rounded-lg" />
+                  <Skeleton className="aspect-4/3 w-full rounded-lg md:aspect-auto md:h-30 md:w-40" />
                   <Skeleton className="h-4 w-20" />
                 </li>
               ))

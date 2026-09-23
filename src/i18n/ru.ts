@@ -34,10 +34,13 @@ export const ru = {
     cartCountAria: "Корзина, товаров: {count}",
     searchPlaceholder: "Поиск в Yumero",
     closeSearch: "Закрыть поиск",
+    openMenu: "Открыть меню",
+    closeMenu: "Закрыть меню",
   },
   home: {
     menuButton: "Меню",
     bannerAlt: "Акция {n}",
+    bannersAria: "Акции",
   },
   categories: {
     all: "Всё меню",

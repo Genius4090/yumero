@@ -9,9 +9,11 @@ interface AddressSelectProps {
   /** Custom trigger element; defaults to the header pill. */
   children?: ReactNode
   align?: "start" | "end"
+  /** `pill` = compact header trigger (default); `row` = full-width card row for the mobile drawer. */
+  variant?: "pill" | "row"
 }
 
-const AddressSelect = ({ children, align = "start" }: AddressSelectProps) => {
+const AddressSelect = ({ children, align = "start", variant = "pill" }: AddressSelectProps) => {
   const { t } = useI18n()
   const { addresses, selected, selectAddress, addAddress, removeAddress } = useAddresses()
   const [listOpen, setListOpen] = useState(false)
@@ -39,25 +41,42 @@ const AddressSelect = ({ children, align = "start" }: AddressSelectProps) => {
     <>
       <Popover open={listOpen} onOpenChange={handleListOpenChange}>
         <PopoverTrigger asChild>
-          {children ?? (
-            <button
-              type="button"
-              aria-label={t("address.deliveryAddress")}
-              className="flex h-11 cursor-pointer items-center gap-3 rounded-full pr-3 text-base font-semibold text-white transition-colors hover:bg-[#2b2a2a]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-            >
-              <span className="grid size-10 place-items-center rounded-full bg-[#2b2a2a]">
-                <MapPin className="size-5" />
-              </span>
-              <span className="max-w-44 truncate">{label}</span>
-              <ChevronDown className={`size-4 text-[#c4c4c4] transition-transform duration-200 ${listOpen ? "rotate-180" : ""}`} />
-            </button>
-          )}
+          {children ??
+            (variant === "row" ? (
+              <button
+                type="button"
+                aria-label={t("address.deliveryAddress")}
+                className="flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-[#2b2a2a] px-4 py-3 text-left transition-colors hover:bg-[#3a3939] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+              >
+                <MapPin className="size-5 shrink-0 text-[#c4c4c4]" />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-xs text-[#8a8a8a]">{t("address.deliveryAddress")}</span>
+                  <span className="block truncate font-semibold">{label}</span>
+                </span>
+                <ChevronDown className={`size-4 shrink-0 text-[#c4c4c4] transition-transform duration-200 ${listOpen ? "rotate-180" : ""}`} />
+              </button>
+            ) : (
+              <button
+                type="button"
+                aria-label={t("address.deliveryAddress")}
+                className="flex h-11 cursor-pointer items-center gap-3 rounded-full pr-3 text-base font-semibold text-white transition-colors hover:bg-[#2b2a2a]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+              >
+                <span className="grid size-10 place-items-center rounded-full bg-[#2b2a2a]">
+                  <MapPin className="size-5" />
+                </span>
+                <span className="max-w-44 truncate">{label}</span>
+                <ChevronDown className={`size-4 text-[#c4c4c4] transition-transform duration-200 ${listOpen ? "rotate-180" : ""}`} />
+              </button>
+            ))}
         </PopoverTrigger>
 
+        {/* the row variant matches its trigger's width; the pill's list never exceeds the phone viewport minus gutters */}
         <PopoverContent
           align={align}
           sideOffset={8}
-          className="w-92 rounded-2xl border border-white/10 bg-[#1c1c1c] p-3 text-white shadow-xl ring-0"
+          className={`rounded-2xl border border-white/10 bg-[#1c1c1c] p-3 text-white shadow-xl ring-0 ${
+            variant === "row" ? "w-(--radix-popover-trigger-width)" : "w-[min(23rem,calc(100vw-2rem))]"
+          }`}
         >
           <ul className="flex max-h-72 flex-col gap-2 overflow-y-auto">
             {addresses.map((item) => {

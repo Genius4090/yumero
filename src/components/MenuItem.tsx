@@ -7,11 +7,12 @@ const MenuItem = ({item,setMenuId}:{item:menuListType,setMenuId:(id:number)=>voi
   
   
   return (
-    <Link to={"/menu"} onClick={()=> setMenuId(item.id)} className="cursor-pointer hover:-translate-y-2 duration-300">
-        <div className="w-[160px] h-[120px] rounded-lg flex items-center justify-center" style={{ backgroundColor: item.menuColor }}>
-            <img src={item.image} alt=""/>
+    <Link to={"/menu"} onClick={()=> setMenuId(item.id)} className="block cursor-pointer duration-300 hover:-translate-y-2">
+        {/* fills its grid cell on phones; the original fixed 160x120 tile from md */}
+        <div className="flex aspect-4/3 w-full items-center justify-center rounded-lg md:aspect-auto md:h-30 md:w-40" style={{ backgroundColor: item.menuColor }}>
+            <img src={item.image} alt="" draggable={false}/>
         </div>
-        <p className="text-center mt-1">{item.content}</p>
+        <p className="mt-1 truncate text-center">{item.content}</p>
         </Link>
   )
 }

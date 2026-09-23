@@ -10,7 +10,7 @@ interface SearchBarProps {
 const SearchBar = ({ value, onChange, extraClass = "" }: SearchBarProps) => {
   const { t } = useI18n()
   return (
-    <label className={`flex px-4 bg-[#2b2a2a] w-[500px] gap-2 py-3 items-center justify-center rounded-full mt-10 ${extraClass}`}>
+    <label className={`mt-10 flex w-full max-w-125 items-center justify-center gap-2 rounded-full bg-[#2b2a2a] px-4 py-3 ${extraClass}`}>
       <Search className="w-4 shrink-0 text-white" />
       <input
         type="search"

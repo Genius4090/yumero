@@ -34,10 +34,13 @@ export const uz: Dictionary = {
     cartCountAria: "Savat, mahsulotlar: {count}",
     searchPlaceholder: "Yumero’da qidirish",
     closeSearch: "Qidiruvni yopish",
+    openMenu: "Menyuni ochish",
+    closeMenu: "Menyuni yopish",
   },
   home: {
     menuButton: "Menyu",
     bannerAlt: "Aksiya {n}",
+    bannersAria: "Aksiyalar",
   },
   categories: {
     all: "Butun menyu",

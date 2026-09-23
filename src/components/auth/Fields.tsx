@@ -153,7 +153,8 @@ export const CodeInput = ({ value, onChange }: { value: string; onChange: (code:
   }, [])
 
   return (
-    <div className="flex justify-between gap-2" role="group" aria-label={t("auth.codeAria")}>
+    /* boxes shrink evenly on narrow phones instead of overflowing the modal */
+    <div className="flex justify-center gap-1.5 sm:gap-2" role="group" aria-label={t("auth.codeAria")}>
       {digits.map((d, i) => (
         <input
           key={i}
@@ -169,7 +170,7 @@ export const CodeInput = ({ value, onChange }: { value: string; onChange: (code:
           onKeyDown={handleKeyDown(i)}
           onPaste={handlePaste}
           aria-label={t("auth.digit", { n: i + 1 })}
-          className="size-12 rounded-xl bg-[#2b2a2a] text-center text-xl font-semibold text-white outline-none transition-shadow focus:ring-2 focus:ring-white/40"
+          className="aspect-square w-full max-w-12 min-w-0 rounded-xl bg-[#2b2a2a] text-center text-xl font-semibold text-white outline-none transition-shadow focus:ring-2 focus:ring-white/40"
         />
       ))}
     </div>

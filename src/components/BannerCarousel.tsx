@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useCallback, useState, useSyncExternalStore } from "react"
 import useEmblaCarousel from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useI18n } from "@/i18n/useI18n"
@@ -16,8 +16,9 @@ interface BannerCarouselProps {
 }
 
 // Buttons sit on the outer padding edge so half overlaps the poster, half hangs outside.
+// Hidden on phones, where the carousel is swiped instead.
 const arrowClass =
-  "absolute top-1/2 z-10 grid size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-[#2b2a2a] text-white shadow-lg transition-colors duration-200 hover:bg-[#3d3c3c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+  "absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-[#2b2a2a] text-white shadow-lg transition-colors duration-200 hover:bg-[#3d3c3c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 md:grid"
 
 /**
  * URLs that have finished loading during this page session. Lives in module scope, so it
@@ -69,34 +70,50 @@ const BannerSlide = ({ item, index }: { item: BannerSlideItem; index: number }) 
 
 const BannerCarousel = ({ items, loading = false }: BannerCarouselProps) => {
   const { t } = useI18n()
+  // phones show one poster at a time and step by one; from md two posters are visible and it steps by two
   const [viewportRef, embla] = useEmblaCarousel({
-    loop: items.length > 2,
+    loop: items.length > 1,
     align: "start",
-    slidesToScroll: 2,
+    slidesToScroll: 1,
     duration: 28,
+    breakpoints: { "(min-width: 768px)": { loop: items.length > 2, slidesToScroll: 2 } },
   })
 
   const scrollPrev = useCallback(() => embla?.scrollPrev(), [embla])
   const scrollNext = useCallback(() => embla?.scrollNext(), [embla])
 
+  // Selected snap + snap count, read straight from Embla (re-rendered on its select / reInit events)
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      if (!embla) return () => {}
+      embla.on("select", onChange).on("reInit", onChange)
+      return () => {
+        embla.off("select", onChange).off("reInit", onChange)
+      }
+    },
+    [embla]
+  )
+  const selected = useSyncExternalStore(subscribe, () => embla?.selectedScrollSnap() ?? 0)
+  const snapCount = useSyncExternalStore(subscribe, () => embla?.scrollSnapList().length ?? 0)
+
   if (!loading && items.length === 0) return null
 
   return (
-    <div className="relative mx-auto w-full max-w-390 px-6">
+    <div className="relative mx-auto w-full max-w-390 px-4 sm:px-6">
       <button type="button" aria-label={t("common.prev")} onClick={scrollPrev} className={`${arrowClass} left-0.5`}>
         <ArrowLeft className="size-5" />
       </button>
 
       <div ref={viewportRef} className="overflow-hidden rounded-3xl">
-        <div className="-ml-6 flex touch-pan-y">
+        <div className="-ml-4 flex touch-pan-y sm:-ml-6">
           {loading && items.length === 0
             ? [0, 1].map((i) => (
-                <div key={i} className="min-w-0 flex-[0_0_50%] pl-6">
+                <div key={i} className="min-w-0 flex-[0_0_100%] pl-4 sm:pl-6 md:flex-[0_0_50%]">
                   <Skeleton className="aspect-16/10 w-full rounded-3xl" />
                 </div>
               ))
             : items.map((item, index) => (
-                <div key={`${item.src}-${index}`} className="min-w-0 flex-[0_0_50%] pl-6">
+                <div key={`${item.src}-${index}`} className="min-w-0 flex-[0_0_100%] pl-4 sm:pl-6 md:flex-[0_0_50%]">
                   <BannerSlide item={item} index={index} />
                 </div>
               ))}
@@ -106,6 +123,25 @@ const BannerCarousel = ({ items, loading = false }: BannerCarouselProps) => {
       <button type="button" aria-label={t("common.next")} onClick={scrollNext} className={`${arrowClass} right-0.5`}>
         <ArrowRight className="size-5" />
       </button>
+
+      {/* phones: one dot per poster (the active one stretches into a line); tapping a dot scrolls to that poster */}
+      {!loading && snapCount > 1 && (
+        <div role="tablist" aria-label={t("home.bannersAria")} className="mt-4 flex items-center justify-center gap-1.5 md:hidden">
+          {Array.from({ length: snapCount }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              role="tab"
+              aria-selected={i === selected}
+              aria-label={t("home.bannerAlt", { n: i + 1 })}
+              onClick={() => embla?.scrollTo(i)}
+              className={`h-1.5 cursor-pointer rounded-full transition-all duration-300 ${
+                i === selected ? "w-6 bg-white" : "w-1.5 bg-white/35 hover:bg-white/60"
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

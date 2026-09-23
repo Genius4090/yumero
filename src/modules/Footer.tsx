@@ -53,7 +53,7 @@ const Footer = () => {
 
       <div className="bg-[#1F1F1F]">
         {/* container keeps the food art close to the content, like the reference */}
-        <div className="relative mx-auto max-w-330 px-6 ">
+        <div className="relative mx-auto max-w-330 px-4 sm:px-6">
           {/* wrappers hold the centering transform; the images float inside them */}
           <div className="pointer-events-none absolute top-1/2 left-6 hidden w-72 -translate-y-1/2 lg:block">
             <img
@@ -75,8 +75,8 @@ const Footer = () => {
             />
           </div>
 
-          <div className="mx-auto flex max-w-xl flex-col items-center py-20 text-center">
-            <Wordmark className="text-6xl" />
+          <div className="mx-auto flex max-w-xl flex-col items-center py-14 text-center sm:py-20">
+            <Wordmark className="text-5xl sm:text-6xl" />
 
             <p className="mt-8 max-w-lg font-semibold leading-relaxed text-[#e6e6e6]">
               {t("footer.tagline")}

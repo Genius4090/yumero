@@ -27,7 +27,7 @@ const LogoutDialog = ({ open, onOpenChange, onConfirm }: LogoutDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={(o) => !busy && onOpenChange(o)}>
-      <DialogContent showCloseButton={false} className="max-w-xs p-7 text-center">
+      <DialogContent showCloseButton={false} className="max-w-xs p-7 text-center sm:p-7">
         <span className="mx-auto mb-4 grid size-14 place-items-center rounded-full bg-[#2b2a2a] text-[#e05252]">
           <LogOut className="size-6" />
         </span>

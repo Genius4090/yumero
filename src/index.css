@@ -19,6 +19,8 @@
   }
   body{
     @apply bg-background font-sans text-foreground;
+    /* no grey flash on tap for buttons/links on iOS and Android */
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Radix (react-remove-scroll) locks scrolling by adding scrollbar-width padding to <body>.
@@ -30,10 +32,25 @@
   }
 }
 
+/* page container: full width with side gutters on phones, capped at 1200px on desktop */
 .containers {
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
+  padding-inline: 1rem;
+}
+@media (min-width: 640px) {
+  .containers {
+    padding-inline: 1.5rem;
+  }
+}
 
+/* horizontally scrolling rows (menu category tabs on phones) hide their scrollbar */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .header-auction{

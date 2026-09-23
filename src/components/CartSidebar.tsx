@@ -65,9 +65,10 @@ const OrderCard = ({ order, onOpen }: { order: orderType; onOpen: () => void }) 
   const extra = order.items.length - MAX_THUMBS
   return (
     <div className="rounded-xl border border-[#3a3a3a] bg-[#1c1c1c] p-5">
-      <div className="flex items-start justify-between gap-3">
+      {/* the status badge drops under the number on narrow phones instead of breaking the number in two */}
+      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
         <div className="min-w-0">
-          <p className="text-lg font-semibold">{t("order.number", { number: order.number })}</p>
+          <p className="text-lg font-semibold whitespace-nowrap">{t("order.number", { number: order.number })}</p>
           <p className="mt-0.5 text-sm text-[#c4c4c4]">{formatOrderDate(order.createdAt, tag)}</p>
         </div>
         <OrderStatusBadge order={order} />
@@ -132,7 +133,8 @@ const CartSidebar = ({ children }: { children: ReactNode }) => {
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50 duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
         <DialogPrimitive.Content
           aria-describedby={undefined}
-          className="fixed inset-y-0 right-0 z-50 flex w-115 max-w-[95vw] flex-col bg-[#1c1c1c] p-6 text-white shadow-2xl outline-none duration-300 ease-out data-open:animate-in data-open:slide-in-from-right data-closed:animate-out data-closed:slide-out-to-right"
+          // full-screen sheet on phones, a 460px drawer from sm
+          className="fixed inset-y-0 right-0 z-50 flex w-full flex-col bg-[#1c1c1c] p-4 text-white shadow-2xl outline-none duration-300 ease-out data-open:animate-in data-open:slide-in-from-right data-closed:animate-out data-closed:slide-out-to-right sm:w-115 sm:max-w-[95vw] sm:p-6"
         >
           <div className="flex items-center justify-between">
             <DialogPrimitive.Title className="text-2xl font-semibold">{t("cart.title")}</DialogPrimitive.Title>
@@ -225,11 +227,12 @@ const CartSidebar = ({ children }: { children: ReactNode }) => {
               type="button"
               onClick={goToCheckout}
               disabled={!authed}
-              className="mt-4 flex w-full cursor-pointer items-center gap-4 rounded-xl bg-[#ff0099] py-3 pr-5 pl-3 font-semibold text-white transition-colors hover:bg-[#ff2bab] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:cursor-not-allowed disabled:bg-[#3a3939] disabled:text-[#8a8a8a] disabled:hover:bg-[#3a3939]"
+              /* one line at every width: the count bubble only from sm, and the label can only ellipsize, never wrap */
+              className="mt-4 flex w-full cursor-pointer items-center gap-3 rounded-xl bg-[#ff0099] px-4 py-3.5 text-sm font-semibold whitespace-nowrap text-white transition-colors hover:bg-[#ff2bab] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:cursor-not-allowed disabled:bg-[#3a3939] disabled:text-[#8a8a8a] disabled:hover:bg-[#3a3939] sm:gap-4 sm:py-3 sm:pr-5 sm:pl-3 sm:text-base"
             >
-              <span className={`grid size-8 place-items-center rounded-full text-sm ${authed ? "bg-black/60" : "bg-black/30"}`}>{count}</span>
-              <span>{authed ? t("cart.checkout") : t("nav.login")}</span>
-              <span className="ml-auto">{formatPrice(subtotal)}</span>
+              <span className={`hidden size-8 shrink-0 place-items-center rounded-full text-sm sm:grid ${authed ? "bg-black/60" : "bg-black/30"}`}>{count}</span>
+              <span className="min-w-0 truncate">{authed ? t("cart.checkout") : t("nav.login")}</span>
+              <span className="ml-auto shrink-0">{formatPrice(subtotal)}</span>
             </button>
           )}
 

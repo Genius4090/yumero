@@ -15,9 +15,10 @@ interface QuantityStepperProps {
 const QuantityStepper = ({ value, onChange, onRemove, min, size = "md", className = "" }: QuantityStepperProps) => {
   const { t } = useI18n()
   const floor = min ?? (onRemove ? 0 : 1)
-  const btn = size === "sm" ? "size-10" : "size-12"
-  const icon = size === "sm" ? "size-4" : "size-5"
-  const num = size === "sm" ? "min-w-7 text-base" : "min-w-8 text-lg"
+  // the "md" size is 40px on phones (same as "sm") and 48px from the sm breakpoint
+  const btn = size === "sm" ? "size-10" : "size-10 sm:size-12"
+  const icon = size === "sm" ? "size-4" : "size-4 sm:size-5"
+  const num = size === "sm" ? "min-w-7 text-base" : "min-w-7 text-base sm:min-w-8 sm:text-lg"
 
   const decrement = () => {
     const next = value - 1

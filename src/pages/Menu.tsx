@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent } from "react"
 import { useSearchParams } from "react-router-dom"
 import type { productType } from "@/@types"
 import { useCategories, useProducts } from "@/api/hooks"
@@ -62,6 +62,44 @@ const Menu = () => {
   )
   const active = tabs.find((c) => c.id === activeId) ?? tabs[0]
 
+  // On phones the tab row scrolls sideways: keep the active tab in view (no-op when the row wraps on desktop)
+  const tabsRef = useRef<HTMLUListElement>(null)
+  useEffect(() => {
+    const row = tabsRef.current
+    if (!row || row.scrollWidth <= row.clientWidth) return
+    row.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView({ inline: "center", block: "nearest" })
+  }, [activeId, searching, tabs])
+
+  // Fingers scroll the row natively; this adds click-and-drag for a mouse (desktop browsers at narrow widths).
+  const drag = useRef<{ x: number; left: number; moved: boolean } | null>(null)
+  const swallowClick = useRef(false)
+  const onTabsPointerDown = (e: PointerEvent<HTMLUListElement>) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return
+    drag.current = { x: e.clientX, left: e.currentTarget.scrollLeft, moved: false }
+  }
+  const onTabsPointerMove = (e: PointerEvent<HTMLUListElement>) => {
+    const d = drag.current
+    if (!d) return
+    const dx = e.clientX - d.x
+    if (Math.abs(dx) > 4) d.moved = true
+    e.currentTarget.scrollLeft = d.left - dx
+  }
+  const onTabsPointerUp = () => {
+    const d = drag.current
+    drag.current = null
+    if (!d?.moved) return
+    // the click that follows a drag must not select a tab
+    swallowClick.current = true
+    window.setTimeout(() => {
+      swallowClick.current = false
+    }, 0)
+  }
+  const onTabsClickCapture = (e: MouseEvent<HTMLUListElement>) => {
+    if (!swallowClick.current) return
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
   // "All": one section per category (in the categories' own order), each with its heading
   const sections = useMemo(() => {
     const items = products.data?.items ?? []
@@ -85,15 +123,25 @@ const Menu = () => {
   const items = products.data?.items ?? []
 
   return (
-    <section className="py-30">
-      <ul className="flex flex-wrap justify-center gap-3 border-t border-b border-[#333333] py-4">
+    <section className="pt-24 pb-16 sm:py-30">
+      {/* phones: one sideways-scrolling row (swipe or drag; a fade on the right hints at more tabs); from md the tabs wrap and centre as before */}
+      <div className="relative border-t border-b border-[#333333] after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-12 after:bg-linear-to-l after:from-background after:to-transparent md:after:hidden">
+        <ul
+          ref={tabsRef}
+          onPointerDown={onTabsPointerDown}
+          onPointerMove={onTabsPointerMove}
+          onPointerUp={onTabsPointerUp}
+          onPointerLeave={onTabsPointerUp}
+          onClickCapture={onTabsClickCapture}
+          className="no-scrollbar flex cursor-grab gap-2 overflow-x-auto px-4 py-4 select-none active:cursor-grabbing sm:gap-3 md:flex-wrap md:justify-center md:px-6 md:cursor-auto"
+        >
         {tabs.map((item) => (
-          <li key={item.id}>
+          <li key={item.id} className="shrink-0">
             <button
               type="button"
               onClick={() => selectTab(item.id)}
               aria-pressed={item.id === activeId && !searching}
-              className={`cursor-pointer rounded-lg border px-2 py-1 tracking-wider transition-colors ${
+              className={`cursor-pointer rounded-lg border px-2 py-1 tracking-wider whitespace-nowrap transition-colors ${
                 item.id === activeId && !searching ? "border-[#77FF00]" : "border-transparent hover:text-white/80"
               }`}
             >
@@ -101,11 +149,12 @@ const Menu = () => {
             </button>
           </li>
         ))}
-      </ul>
+        </ul>
+      </div>
 
       <div className="containers">
         <div className="flex w-full justify-between">
-          <SearchBar value={query} onChange={setQuery} extraClass="w-[300px]!" />
+          <SearchBar value={query} onChange={setQuery} extraClass="sm:max-w-75" />
         </div>
 
         {/* "All" has a heading per category instead of one page title */}
@@ -123,7 +172,7 @@ const Menu = () => {
             </button>
           </div>
         ) : products.isPending ? (
-          <ul className="grid grid-cols-4 gap-6">
+          <ul className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
             {Array.from({ length: 8 }, (_, i) => (
               <li key={i}>
                 <Skeleton className="aspect-[1/0.93] w-full rounded-xl" />
@@ -140,7 +189,7 @@ const Menu = () => {
                 <h3 id={`menu-section-${section.id}`} className="mb-6 text-2xl font-semibold">
                   {section.name}
                 </h3>
-                <ul className="grid grid-cols-4 gap-6">
+                <ul className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-6">
                   {section.items.map((item) => (
                     <li key={item.id}>
                       <FoodCard product={item} onClick={setSelected} />
@@ -151,7 +200,7 @@ const Menu = () => {
             ))}
           </div>
         ) : (
-          <ul className={`grid grid-cols-4 gap-6 transition-opacity ${products.isFetching ? "opacity-70" : ""}`}>
+          <ul className={`grid grid-cols-2 gap-3 transition-opacity sm:gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-6 ${products.isFetching ? "opacity-70" : ""}`}>
             {items.map((item) => (
               <li key={item.id}>
                 <FoodCard product={item} onClick={setSelected} />

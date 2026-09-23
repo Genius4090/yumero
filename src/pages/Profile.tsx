@@ -48,12 +48,12 @@ const AvatarEditor = ({ url, onChange }: { url: string | null; onChange: (file: 
 
   return (
     <div className="flex shrink-0 flex-col items-center gap-2">
-      <div className="group relative size-28">
+      <div className="group relative size-24 sm:size-28">
         {photo ? (
           <img src={photo} alt="" className="size-full rounded-full object-cover ring-4 ring-[#2b2a2a]" draggable={false} />
         ) : (
           <span className="grid size-full place-items-center rounded-full bg-[#2b2a2a] text-[#8a8a8a] ring-4 ring-[#2b2a2a]">
-            <UserRound className="size-12" />
+            <UserRound className="size-10 sm:size-12" />
           </span>
         )}
         <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
@@ -109,7 +109,7 @@ const NameEditor = ({ value, onSave }: { value: string; onSave: (name: string) =
 
   if (editing) {
     return (
-      <form onSubmit={save} className="flex items-center gap-2">
+      <form onSubmit={save} className="flex w-full items-center gap-2">
         <input
           ref={inputRef}
           value={draft}
@@ -143,8 +143,9 @@ const NameEditor = ({ value, onSave }: { value: string; onSave: (name: string) =
   }
 
   return (
-    <div className="flex min-w-0 items-center gap-3">
-      <h1 className={`min-w-0 truncate text-3xl font-semibold ${value ? "" : "text-[#8a8a8a]"}`} title={value || undefined}>
+    /* centred under the avatar on phones, left-aligned next to it from sm */
+    <div className="flex min-w-0 items-center justify-center gap-3 sm:justify-start">
+      <h1 className={`min-w-0 truncate text-2xl font-semibold sm:text-3xl ${value ? "" : "text-[#8a8a8a]"}`} title={value || undefined}>
         {value || t("profile.yourName")}
       </h1>
       <button
@@ -266,12 +267,15 @@ const LanguageRow = () => {
   const { setSetting } = useSettings()
 
   return (
-    <div className="flex w-full items-center gap-4 rounded-2xl bg-[#2b2a2a] px-5 h-18">
-      <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#1c1c1c]">
-        <Languages className="size-5" />
-      </span>
-      <span className="flex-1 font-medium">{t("languages.label")}</span>
-      <div role="radiogroup" aria-label={t("languages.label")} className="flex rounded-full bg-[#1c1c1c] p-2">
+    /* phones: label row, then the full-width switch underneath; from sm everything on one 72px line */
+    <div className="flex w-full flex-col gap-3 rounded-2xl bg-[#2b2a2a] px-5 py-4 sm:h-18 sm:flex-row sm:items-center sm:gap-4 sm:py-0">
+      <div className="flex items-center gap-4">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#1c1c1c]">
+          <Languages className="size-5" />
+        </span>
+        <span className="flex-1 font-medium">{t("languages.label")}</span>
+      </div>
+      <div role="radiogroup" aria-label={t("languages.label")} className="flex rounded-full bg-[#1c1c1c] p-2 sm:ml-auto">
         {LOCALES.map((l) => {
           const active = l === locale
           return (
@@ -282,7 +286,7 @@ const LanguageRow = () => {
               aria-checked={active}
               lang={l}
               onClick={() => setSetting("locale", l)}
-              className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${
+              className={`flex-1 cursor-pointer rounded-full px-2 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 sm:flex-none sm:px-4 ${
                 active ? "bg-white text-black" : "text-[#c4c4c4] hover:text-white"
               }`}
             >
@@ -317,14 +321,15 @@ const Profile = () => {
     "flex w-full cursor-pointer items-center gap-4 rounded-2xl bg-[#2b2a2a] px-5 py-4 text-left transition-colors hover:bg-[#3a3939] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
 
   return (
-    <section className="min-h-screen py-30">
-      <div className="mx-auto w-full max-w-3xl px-6">
-        <div className="rounded-3xl bg-[#1c1c1c] p-8">
-          <div className="flex items-center gap-6">
+    <section className="min-h-screen pt-24 pb-16 sm:py-30">
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6">
+        <div className="rounded-3xl bg-[#1c1c1c] p-5 sm:p-8">
+          {/* phones: avatar above the name, both centred; from sm side by side */}
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
             <AvatarEditor url={user.avatarUrl} onChange={setAvatar} />
-            <div className="min-w-0 flex-1">
+            <div className="w-full min-w-0 flex-1">
               <NameEditor value={user.fullName} onSave={(fullName) => updateUser({ fullName })} />
-              <p className="mt-2 flex items-center gap-2 text-[#c4c4c4]">
+              <p className="mt-2 flex items-center justify-center gap-2 text-[#c4c4c4] sm:justify-start">
                 <Phone className="size-4" />
                 {formatPhone(user.phone)}
               </p>

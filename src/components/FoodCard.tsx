@@ -35,7 +35,7 @@ const FoodCard = ({ product, onClick }: FoodCardProps) => {
           className="absolute top-[52%] left-1/2 max-h-[62%] w-[56%] -translate-x-1/2 -translate-y-1/2 object-contain drop-shadow-lg"
         />
       </div>
-      <span className="w-full truncate bg-[#1f1f1f] px-4 py-4 text-xl font-semibold">{name}</span>
+      <span className="w-full truncate bg-[#1f1f1f] px-3 py-3 text-base font-semibold sm:px-4 sm:py-4 sm:text-lg lg:text-xl">{name}</span>
     </button>
   )
 }

@@ -120,6 +120,9 @@ const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
 
   const canSave = draft.address.trim().length > 0
 
+  // On phones the map sits on top and the keyboard would cover it: don't focus the address field automatically there.
+  const autoFocusAddress = () => window.matchMedia("(min-width: 768px)").matches
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (!canSave) return
@@ -132,9 +135,13 @@ const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
       <DialogContent
         showCloseButton={false}
         aria-describedby={undefined}
-        className="w-[min(1040px,95vw)] max-w-none p-0 md:h-140"
+        onOpenAutoFocus={(e) => {
+          if (!autoFocusAddress()) e.preventDefault()
+        }}
+        className="w-[min(1040px,calc(100%-2rem))] max-w-none p-0 sm:p-0 md:h-140"
       >
-        <div className="grid h-full grid-cols-1 gap-6 p-6 md:grid-cols-2 md:p-7">
+        {/* phones: map first (with the close button), form below, scrolls inside the dialog; from md side by side */}
+        <div className="grid h-full grid-cols-1 gap-4 p-4 md:grid-cols-2 md:gap-6 md:p-7">
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <div className="mb-2">
               <DialogTitle>{t("address.modalTitle")}</DialogTitle>
@@ -148,7 +155,7 @@ const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
                 onChange={update("address")}
                 placeholder={geocoding ? t("address.detecting") : t("address.enterAddress")}
                 aria-label={t("address.addressAria")}
-                autoFocus
+                autoFocus={autoFocusAddress()}
                 className={`${inputClass} pl-12`}
               />
             </label>
@@ -173,7 +180,7 @@ const AddressModal = ({ open, onOpenChange, onSave }: AddressModalProps) => {
             </Button>
           </form>
 
-          <div className="relative min-h-80 overflow-hidden rounded-2xl bg-[#2b2a2a]">
+          <div className="relative order-first h-64 overflow-hidden rounded-2xl bg-[#2b2a2a] md:order-0 md:h-auto md:min-h-80">
             <MapPicker lat={draft.lat} lng={draft.lng} onChange={handleMapChange} className="h-full w-full" />
 
             <DialogClose

@@ -34,10 +34,13 @@ export const en: Dictionary = {
     cartCountAria: "Cart, items: {count}",
     searchPlaceholder: "Search in Yumero",
     closeSearch: "Close search",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
   },
   home: {
     menuButton: "Menu",
     bannerAlt: "Promo {n}",
+    bannersAria: "Promos",
   },
   categories: {
     all: "All",

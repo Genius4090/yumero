@@ -60,16 +60,16 @@ const Checkout = () => {
 
   if (done) {
     return (
-      <section className="flex min-h-screen items-center justify-center py-30">
-        <div className="flex max-w-md flex-col items-center gap-4 rounded-3xl bg-[#1c1c1c] px-10 py-12 text-center">
+      <section className="flex min-h-screen items-center justify-center px-4 pt-24 pb-16 sm:py-30">
+        <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-3xl bg-[#1c1c1c] px-6 py-10 text-center sm:px-10 sm:py-12">
           <CircleCheck className="size-16 text-[#77FF00]" />
-          <h1 className="text-3xl font-semibold">{t("checkout.done.title", { number: done.number })}</h1>
+          <h1 className="text-2xl font-semibold sm:text-3xl">{t("checkout.done.title", { number: done.number })}</h1>
           <p className="text-[#c4c4c4]">{t("checkout.done.text")}</p>
-          <div className="mt-4 flex gap-3">
-            <Link to={`/orders#${done.id}`} className="rounded-xl bg-[#ff0099] px-8 py-3 font-semibold text-white transition-colors hover:bg-[#ff2bab]">
+          <div className="mt-4 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+            <Link to={`/orders#${done.id}`} className="rounded-xl bg-[#ff0099] px-8 py-3 text-center font-semibold text-white transition-colors hover:bg-[#ff2bab]">
               {t("checkout.done.myOrders")}
             </Link>
-            <Link to="/menu" className="rounded-xl bg-[#2b2a2a] px-8 py-3 font-semibold text-white transition-colors hover:bg-[#3a3939]">
+            <Link to="/menu" className="rounded-xl bg-[#2b2a2a] px-8 py-3 text-center font-semibold text-white transition-colors hover:bg-[#3a3939]">
               {t("checkout.done.toMenu")}
             </Link>
           </div>
@@ -82,8 +82,8 @@ const Checkout = () => {
 
   if (status === "guest") {
     return (
-      <section className="flex min-h-screen items-center justify-center py-30">
-        <div className="flex max-w-md flex-col items-center gap-4 rounded-3xl bg-[#1c1c1c] px-10 py-12 text-center">
+      <section className="flex min-h-screen items-center justify-center px-4 pt-24 pb-16 sm:py-30">
+        <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-3xl bg-[#1c1c1c] px-6 py-10 text-center sm:px-10 sm:py-12">
           <span className="grid size-16 place-items-center rounded-full bg-[#2b2a2a]">
             <LogIn className="size-7" />
           </span>
@@ -173,13 +173,14 @@ const Checkout = () => {
   }
 
   return (
-    <section className="pt-20 pb-24">
+    <section className="pt-20 pb-16 sm:pb-24">
       {/* route context: pannable map with the restaurant pinned */}
-      <RestaurantMap className="h-72 w-full" />
+      <RestaurantMap className="h-48 w-full sm:h-60 lg:h-72" />
 
-      <div className="mx-auto -mt-8 grid max-w-270 grid-cols-[1fr_320px] gap-14 px-8">
+      {/* one column up to lg (summary below the form), two columns with the sticky summary from lg */}
+      <div className="mx-auto -mt-8 grid max-w-270 grid-cols-1 gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_320px] lg:gap-14 lg:px-8">
         {/* ---------- left column ---------- */}
-        <div className="mx-auto flex w-full max-w-110 flex-col gap-12 pt-20">
+        <div className="mx-auto flex w-full max-w-110 flex-col gap-10 pt-12 lg:gap-12 lg:pt-20">
           <div role="tablist" aria-label={t("checkout.modeAria")} className="grid grid-cols-2 rounded-full bg-[#2b2a2a] p-1">
             {(["delivery", "pickup"] as const).map((m) => {
               const active = m === mode
@@ -226,9 +227,9 @@ const Checkout = () => {
               ) : (
                 <div className={rowClass}>
                   <MapPin className="size-5 shrink-0 text-[#c4c4c4]" />
-                  <span className="text-sm">
+                  <span className="min-w-0 text-sm">
                     <span className="font-semibold">{settings.name}</span>
-                    <span className="ml-2 text-[#c4c4c4]">{pickText(settings.address, locale)}</span>
+                    <span className="block text-[#c4c4c4] sm:ml-2 sm:inline">{pickText(settings.address, locale)}</span>
                   </span>
                 </div>
               )}
@@ -247,26 +248,28 @@ const Checkout = () => {
           </div>
 
           <div>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold">{t("checkout.itemsTitle")}</h2>
-              <Link to="/menu" className="flex items-center gap-1 text-base font-medium text-[#ff4fb6] hover:text-white">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h2 className="min-w-0 text-lg font-semibold sm:text-xl">{t("checkout.itemsTitle")}</h2>
+              <Link to="/menu" className="flex shrink-0 items-center gap-1 text-sm font-medium whitespace-nowrap text-[#ff4fb6] hover:text-white sm:text-base">
                 <Plus className="size-4" />
                 {t("checkout.addMore")}
               </Link>
             </div>
             <ul className="flex flex-col gap-5">
               {items.map((item) => (
-                <li key={item.product.id} className="flex items-center gap-4">
+                /* the name/price block keeps a minimum width; on 320px phones the stepper wraps under it (right-aligned) */
+                <li key={item.product.id} className="flex flex-wrap items-center gap-x-4 gap-y-3">
                   <img src={mediaUrl(item.product.imageUrl) ?? ProductBurgerSet} alt="" draggable={false} className="size-16 rounded-lg bg-[#e9e5d9] object-contain p-1" />
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-24 flex-1">
                     <p className="truncate text-base font-semibold">{pickText(item.product.name, locale)}</p>
-                    <p className="text-base text-[#ff4fb6]">{formatPrice(item.product.price)}</p>
+                    <p className="text-base whitespace-nowrap text-[#ff4fb6]">{formatPrice(item.product.price)}</p>
                   </div>
                   <QuantityStepper
                     size="sm"
                     value={item.quantity}
                     onChange={(q) => setQuantity(item.product.id, q)}
                     onRemove={() => removeItem(item.product.id)}
+                    className="ml-auto"
                   />
                 </li>
               ))}
@@ -360,7 +363,7 @@ const Checkout = () => {
 
         {/* ---------- right column: summary ---------- */}
         {/* above the (isolated) map, below popovers/dialogs (z-50) */}
-        <aside className="relative z-10 self-start rounded-2xl bg-[#1c1c1c] p-6 shadow-2xl md:sticky md:top-28">
+        <aside className="relative z-10 mx-auto w-full max-w-110 self-start rounded-2xl bg-[#1c1c1c] p-5 shadow-2xl sm:p-6 lg:sticky lg:top-28 lg:mx-0 lg:max-w-none">
           <h2 className="text-xl font-semibold">{t("checkout.summary")}</h2>
           <p className="text-sm text-[#c4c4c4]">{t("checkout.taxNote")}</p>
 
