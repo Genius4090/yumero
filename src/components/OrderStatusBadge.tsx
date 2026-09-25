@@ -1,15 +1,18 @@
-import { Bike, ChefHat, CircleCheck, ShoppingBag, XCircle } from "lucide-react"
+import { Bike, ChefHat, CircleCheck, ClipboardCheck, MapPinCheck, ShoppingBag, XCircle } from "lucide-react"
 import type { orderType } from "@/@types"
 import { useI18n } from "@/i18n/useI18n"
 import { orderStatusOf, statusKey, type orderStatus } from "@/lib/orders"
 
 /**
- * One colour + icon per status, following the usual delivery-app convention:
- * amber = being prepared, blue = on its way, teal = ready to collect, green = completed, red = cancelled.
+ * One colour + icon per status, following the usual delivery-app convention: pink = received (the brand colour),
+ * amber = being prepared, blue = on its way, violet = courier waiting at the door, teal = ready to collect,
+ * green = completed, red = cancelled.
  */
 const STATUS: Record<orderStatus, { className: string; Icon: typeof ChefHat }> = {
+  received: { className: "bg-[#ff0099]/15 text-[#ff5cb8]", Icon: ClipboardCheck },
   cooking: { className: "bg-[#f5c400]/15 text-[#f5c400]", Icon: ChefHat },
   transit: { className: "bg-[#4da3ff]/15 text-[#4da3ff]", Icon: Bike },
+  arrived: { className: "bg-[#b388ff]/15 text-[#b388ff]", Icon: MapPinCheck },
   ready: { className: "bg-[#2dd4bf]/15 text-[#2dd4bf]", Icon: ShoppingBag },
   delivered: { className: "bg-[#77FF00]/10 text-[#77FF00]", Icon: CircleCheck },
   pickedUp: { className: "bg-[#77FF00]/10 text-[#77FF00]", Icon: CircleCheck },

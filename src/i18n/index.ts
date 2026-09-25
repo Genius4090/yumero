@@ -14,7 +14,7 @@ export const DEFAULT_LOCALE: Locale = "ru"
 export const LOCALE_TAGS: Record<Locale, string> = { ru: "ru-RU", en: "en-US", uz: "uz-Latn-UZ" }
 
 /** Language names in their own language (for the switcher). */
-export const LOCALE_NAMES: Record<Locale, string> = { ru: "Русский", en: "English", uz: "Oʻzbekcha" }
+export const LOCALE_NAMES: Record<Locale, string> = { ru: "Русский", en: "English", uz: "O'zbekcha" }
 
 export const isLocale = (v: unknown): v is Locale => typeof v === "string" && (LOCALES as readonly string[]).includes(v)
 

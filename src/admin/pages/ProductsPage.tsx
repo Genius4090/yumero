@@ -49,7 +49,7 @@ const readView = (): ProductsView => {
   }
 };
 const viewBtnCls = (active: boolean) =>
-  `grid size-9 cursor-pointer place-items-center rounded-full transition-colors ${active ? "bg-white text-black" : "text-[#c4c4c4] hover:text-white"}`;
+  `grid size-8 cursor-pointer place-items-center rounded-full transition-colors sm:size-9 ${active ? "bg-white text-black" : "text-[#c4c4c4] hover:text-white"}`;
 
 const toInput = (
   p: productType | null,
@@ -105,7 +105,8 @@ const ProductForm = ({
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
-      <div className="grid grid-cols-[auto_1fr] gap-6">
+      {/* phones: photo above the fields; from sm side by side */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-[auto_1fr] sm:gap-6">
         <ImageUpload
           value={form.imageUrl}
           onChange={(url) => set("imageUrl", url)}
@@ -247,23 +248,29 @@ const ProductsPage = () => {
 
   return (
     <>
-      <PageHeader title={t("admin.nav.products")}>
-        <Input
-          placeholder={t("admin.common.search")}
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            pager.setPage(1);
-          }}
-          className="w-56"
-        />
+      {/* phones: title / full-width search / category + view switch + add; one row from sm */}
+      <PageHeader
+        title={t("admin.nav.products")}
+        stack
+        toolbar={
+          <Input
+            placeholder={t("admin.common.search")}
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              pager.setPage(1);
+            }}
+            className="min-w-0 flex-1 sm:w-56 sm:flex-none"
+          />
+        }
+      >
         <Select
           value={filter}
           onChange={(v) => {
             setFilter(v);
             pager.setPage(1);
           }}
-          className="w-48"
+          className="min-w-0 flex-1 sm:w-48 sm:flex-none"
           aria-label={t("admin.common.category")}
           options={[
             { value: ALL_CATEGORIES, label: t("admin.orders.all") },
@@ -274,10 +281,15 @@ const ProductsPage = () => {
             })),
           ]}
         />
+        {/* row order: category selector, Add, then the view switch at the right edge */}
+        <Btn variant="primary" onClick={() => setEditing("new")}>
+          <Plus className="size-4" />
+          {t("admin.common.add")}
+        </Btn>
         <div
           role="radiogroup"
           aria-label={t("admin.common.view")}
-          className="flex h-11 items-center rounded-full bg-[#2b2a2a] p-1"
+          className="ml-auto flex h-10 items-center rounded-full bg-[#2b2a2a] p-1 sm:h-11"
         >
           <button
             type="button"
@@ -300,10 +312,6 @@ const ProductsPage = () => {
             <LayoutGrid className="size-4" />
           </button>
         </div>
-        <Btn variant="primary" onClick={() => setEditing("new")}>
-          <Plus className="size-4" />
-          {t("admin.common.add")}
-        </Btn>
       </PageHeader>
 
       {view === "cards" && (
@@ -447,7 +455,7 @@ const ProductsPage = () => {
                     <td className="text-[#c4c4c4]">
                       {categoryName(p.categoryId)}
                     </td>
-                    <td>{formatPrice(p.price)}</td>
+                    <td className="whitespace-nowrap">{formatPrice(p.price)}</td>
                     <td className="text-[#c4c4c4]">{p.sort}</td>
                     <td>
                       {p.isAvailable ? (

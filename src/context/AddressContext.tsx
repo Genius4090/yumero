@@ -125,27 +125,32 @@ export const AddressProvider = ({ children }: { children: ReactNode }) => {
 
   const removeAddress = useCallback<AddressContextValue["removeAddress"]>(
     async (id) => {
-      let remaining: addressType[]
-      if (authed) {
-        await remove.mutateAsync(id)
-        remaining = (query.data ?? []).filter((a) => a.id !== id)
-      } else {
-        remaining = localList.filter((a) => a.id !== id)
+      const remaining = (authed ? (query.data ?? []) : localList).filter((a) => a.id !== id)
+      if (!authed) {
         setLocalList(remaining)
         persist(LIST_KEY, JSON.stringify(remaining))
       }
-      // if the selected one was removed, fall back to the first remaining address
-      setSelectedId((sel) => {
-        if (sel !== id) return sel
+      // if the selected one was removed, fall back to the first remaining address (right away: the row leaves the list at once)
+      const previous = selectedId
+      if (previous === id) {
         const fallback = remaining[0]?.id ?? null
+        setSelectedId(fallback)
         persist(SELECTED_KEY, fallback)
-        return fallback
-      })
+      }
+      if (!authed) return
+      try {
+        await remove.mutateAsync(id)
+      } catch (err) {
+        // the list is restored by the mutation; restore the selection too
+        if (previous === id) selectAddress(id)
+        throw err
+      }
     },
-    [authed, remove, query.data, localList]
+    [authed, remove, query.data, localList, selectedId, selectAddress]
   )
 
-  const selected = addresses.find((a) => a.id === selectedId) ?? null
+  // the selected address may have been deleted on another device: fall back to the first one, like a local delete does
+  const selected = addresses.find((a) => a.id === selectedId) ?? addresses[0] ?? null
 
   return (
     <AddressContext.Provider value={{ addresses, selected, selectAddress, addAddress, removeAddress }}>{children}</AddressContext.Provider>

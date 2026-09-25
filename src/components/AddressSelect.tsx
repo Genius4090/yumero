@@ -9,11 +9,9 @@ interface AddressSelectProps {
   /** Custom trigger element; defaults to the header pill. */
   children?: ReactNode
   align?: "start" | "end"
-  /** `pill` = compact header trigger (default); `row` = full-width card row for the mobile drawer. */
-  variant?: "pill" | "row"
 }
 
-const AddressSelect = ({ children, align = "start", variant = "pill" }: AddressSelectProps) => {
+const AddressSelect = ({ children, align = "start" }: AddressSelectProps) => {
   const { t } = useI18n()
   const { addresses, selected, selectAddress, addAddress, removeAddress } = useAddresses()
   const [listOpen, setListOpen] = useState(false)
@@ -41,44 +39,32 @@ const AddressSelect = ({ children, align = "start", variant = "pill" }: AddressS
     <>
       <Popover open={listOpen} onOpenChange={handleListOpenChange}>
         <PopoverTrigger asChild>
-          {children ??
-            (variant === "row" ? (
+          {children ?? (
+              /* phones: icon only; from sm the label (capped at 176px) and chevron appear */
               <button
                 type="button"
                 aria-label={t("address.deliveryAddress")}
-                className="flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-[#2b2a2a] px-4 py-3 text-left transition-colors hover:bg-[#3a3939] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                title={label}
+                className="flex h-11 shrink-0 cursor-pointer items-center rounded-full text-base font-semibold text-white transition-colors hover:bg-[#2b2a2a]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 sm:gap-3 sm:pr-3"
               >
-                <MapPin className="size-5 shrink-0 text-[#c4c4c4]" />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-xs text-[#8a8a8a]">{t("address.deliveryAddress")}</span>
-                  <span className="block truncate font-semibold">{label}</span>
-                </span>
-                <ChevronDown className={`size-4 shrink-0 text-[#c4c4c4] transition-transform duration-200 ${listOpen ? "rotate-180" : ""}`} />
-              </button>
-            ) : (
-              <button
-                type="button"
-                aria-label={t("address.deliveryAddress")}
-                className="flex h-11 cursor-pointer items-center gap-3 rounded-full pr-3 text-base font-semibold text-white transition-colors hover:bg-[#2b2a2a]/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-              >
-                <span className="grid size-10 place-items-center rounded-full bg-[#2b2a2a]">
+                {/* same 44px circle as the search and cart buttons */}
+                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#2b2a2a]">
                   <MapPin className="size-5" />
                 </span>
-                <span className="max-w-44 truncate">{label}</span>
-                <ChevronDown className={`size-4 text-[#c4c4c4] transition-transform duration-200 ${listOpen ? "rotate-180" : ""}`} />
+                <span className="hidden max-w-44 truncate sm:inline">{label}</span>
+                <ChevronDown className={`hidden size-4 shrink-0 text-[#c4c4c4] transition-transform duration-200 sm:block ${listOpen ? "rotate-180" : ""}`} />
               </button>
-            ))}
+          )}
         </PopoverTrigger>
 
-        {/* the row variant matches its trigger's width; the pill's list never exceeds the phone viewport minus gutters */}
+        {/* phones: centred under the header (see the data-address-list rule in index.css); anchored to the pill from sm */}
         <PopoverContent
           align={align}
           sideOffset={8}
-          className={`rounded-2xl border border-white/10 bg-[#1c1c1c] p-3 text-white shadow-xl ring-0 ${
-            variant === "row" ? "w-(--radix-popover-trigger-width)" : "w-[min(23rem,calc(100vw-2rem))]"
-          }`}
+          data-address-list
+          className="w-[min(20rem,calc(100vw-3rem))] rounded-2xl border border-white/10 bg-[#1c1c1c] p-2 text-white shadow-xl ring-0 sm:w-92 sm:p-3"
         >
-          <ul className="flex max-h-72 flex-col gap-2 overflow-y-auto">
+          <ul className="flex max-h-72 flex-col gap-1.5 overflow-y-auto sm:gap-2">
             {addresses.map((item) => {
               const active = item.id === selected?.id
               return (
@@ -95,7 +81,7 @@ const AddressSelect = ({ children, align = "start", variant = "pill" }: AddressS
                       selectAddress(item.id)
                       setListOpen(false)
                     }}
-                    className="flex min-w-0 flex-1 cursor-pointer items-center justify-between gap-3 rounded-xl py-3 pl-4 text-left focus-visible:outline-none"
+                    className="flex min-w-0 flex-1 cursor-pointer items-center justify-between gap-3 rounded-xl py-2.5 pl-3 text-left text-sm focus-visible:outline-none sm:py-3 sm:pl-4 sm:text-base"
                   >
                     <span className="min-w-0 flex-1">
                       <span className="block truncate font-medium">{item.title || fullAddress(item)}</span>
@@ -112,7 +98,8 @@ const AddressSelect = ({ children, align = "start", variant = "pill" }: AddressS
                   <button
                     type="button"
                     aria-label={t("address.deleteAria", { name: item.title || fullAddress(item) })}
-                    onClick={() => removeAddress(item.id)}
+                    // on failure the address is already back in the list; nothing else to report here
+                    onClick={() => void removeAddress(item.id).catch(() => undefined)}
                     className="grid size-8 shrink-0 cursor-pointer place-items-center rounded-lg text-[#8a8a8a] transition-colors hover:bg-[#3a3939] hover:text-red-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
                   >
                     <Trash2 className="size-4" />
@@ -125,7 +112,7 @@ const AddressSelect = ({ children, align = "start", variant = "pill" }: AddressS
           <button
             type="button"
             onClick={openForm}
-            className="mt-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/30 py-3 font-medium transition-colors hover:border-white hover:bg-white hover:text-black"
+            className="mt-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-white/30 py-2.5 text-sm font-medium transition-colors hover:border-white hover:bg-white hover:text-black sm:py-3 sm:text-base"
           >
             <Plus className="size-4" />
             {t("address.addNew")}

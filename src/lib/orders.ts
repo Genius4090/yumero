@@ -2,26 +2,27 @@ import type { orderStatusApi, orderType } from "@/@types"
 import type { TranslationKey } from "@/i18n"
 
 /** User-facing status: one colour and label each (see OrderStatusBadge). */
-export type orderStatus = "cooking" | "transit" | "ready" | "delivered" | "pickedUp" | "cancelled"
+export type orderStatus = "received" | "cooking" | "transit" | "arrived" | "ready" | "delivered" | "pickedUp" | "cancelled"
 
 const DISPLAY: Record<orderStatusApi, orderStatus> = {
-  NEW: "cooking",
+  NEW: "received",
   COOKING: "cooking",
   ON_THE_WAY: "transit",
+  ARRIVED: "arrived",
   READY: "ready",
   DELIVERED: "delivered",
   PICKED_UP: "pickedUp",
   CANCELLED: "cancelled",
 }
 
-export const orderStatusOf = (order: Pick<orderType, "status">): orderStatus => DISPLAY[order.status] ?? "cooking"
+export const orderStatusOf = (order: Pick<orderType, "status">): orderStatus => DISPLAY[order.status] ?? "received"
 
 /** An order can only be cancelled while the kitchen hasn't handed it over yet. */
 export const canCancelOrder = (order: Pick<orderType, "status">) => order.status === "NEW" || order.status === "COOKING"
 
 /** Still in progress (polled for live status updates). */
 export const isActiveOrder = (order: Pick<orderType, "status">) =>
-  order.status === "NEW" || order.status === "COOKING" || order.status === "ON_THE_WAY" || order.status === "READY"
+  order.status === "NEW" || order.status === "COOKING" || order.status === "ON_THE_WAY" || order.status === "ARRIVED" || order.status === "READY"
 
 /** Dictionary key for a status label; translate with `t()`. */
 export const statusKey = (status: orderStatus): TranslationKey => `order.stage.${status}`

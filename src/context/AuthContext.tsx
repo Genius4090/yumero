@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import type { AuthUser } from "@/@types"
+import { clearMenuTab } from "@/data/categories"
 import { apiFetch, refreshSession, removeAvatar, tokenStore, uploadAvatar } from "@/lib/api"
 
 export type AuthStatus = "loading" | "guest" | "authed"
@@ -68,6 +69,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null)
     setStatus("guest")
     qc.clear()
+    // the next session starts the menu on "Popular"
+    clearMenuTab()
   }, [qc])
 
   const updateUser = useCallback(async (patch: { fullName: string }) => {

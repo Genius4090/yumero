@@ -45,6 +45,18 @@
   }
 }
 
+/* Phones: the header's address list opens centred under the top bar instead of anchored to the pin icon.
+   Radix positions the popper wrapper with inline styles, hence the !important overrides. */
+@media (max-width: 639px) {
+  [data-radix-popper-content-wrapper]:has(> [data-address-list]) {
+    position: fixed !important;
+    top: 5.5rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    min-width: 0 !important;
+  }
+}
+
 /* horizontally scrolling rows (menu category tabs on phones) hide their scrollbar */
 @utility no-scrollbar {
   scrollbar-width: none;
@@ -192,21 +204,25 @@
 
 
 
-::-webkit-scrollbar {
-  width: 7px;
-}
+/* Custom scrollbar for mouse devices only: phones/tablets would otherwise render this as a
+   permanent square bar (they lose their thin auto-hiding overlay scrollbar once it is styled). */
+@media (hover: hover) and (pointer: fine) {
+  ::-webkit-scrollbar {
+    width: 7px;
+  }
 
-::-webkit-scrollbar-track {
-  background: #111;
-}
+  ::-webkit-scrollbar-track {
+    background: #111;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 3px;
-}
+  ::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #1677FF;
+  ::-webkit-scrollbar-thumb:hover {
+    background: #1677FF;
+  }
 }
 
 

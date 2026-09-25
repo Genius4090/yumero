@@ -3,7 +3,7 @@ import { MenuItemImg } from "@/assets/images"
 import { useBanners, useCategories } from "@/api/hooks"
 import { BannerCarousel, Button, MenuItem } from "@/components"
 import { Skeleton } from "@/components/ui/skeleton"
-import { MENU_TAB_KEY } from "@/data/categories"
+import { saveMenuTab } from "@/data/categories"
 import { useI18n } from "@/i18n/useI18n"
 import { mediaUrl } from "@/lib/api"
 import { pickText } from "@/lib/localized"
@@ -24,13 +24,7 @@ const Home = () => {
     menuColor: c.color,
   }))
 
-  const setMenuId = (id: number | string) => {
-    try {
-      localStorage.setItem(MENU_TAB_KEY, String(id))
-    } catch {
-      // ignore
-    }
-  }
+  const setMenuId = (id: number | string) => saveMenuTab(Number(id))
 
   const bannerItems = (banners.data ?? []).map((b) => ({ src: mediaUrl(b.imageUrl) ?? b.imageUrl, link: b.link }))
 
@@ -40,8 +34,9 @@ const Home = () => {
         <BannerCarousel items={bannerItems} loading={banners.isPending} />
 
         {/* phones: 2 / 3 equal columns; from md the original fixed 160px tiles that wrap and centre */}
-        {/* no side padding from md: seven 160px tiles + gaps need the full 1280px cap to sit on one line */}
-        <ul className="mt-10 grid w-full max-w-7xl grid-cols-2 gap-4 px-4 sm:grid-cols-3 md:flex md:flex-wrap md:justify-center md:gap-5 md:px-0">
+        {/* a centred wrapping row at every width, so an odd last tile sits in the middle: tiles are 2 / 3 per row
+            on phones and the original fixed 160px tiles from md (no side padding there: seven of them need the full 1280px cap) */}
+        <ul className="mt-10 flex w-full max-w-7xl flex-wrap justify-center gap-4 px-4 *:w-[calc(50%-0.5rem)] sm:*:w-[calc(33.333%-0.667rem)] md:gap-5 md:px-0 md:*:w-auto">
           {categories.isPending
             ? Array.from({ length: 8 }, (_, i) => (
                 <li key={i} className="flex flex-col items-center gap-2">

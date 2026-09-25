@@ -78,7 +78,7 @@ const DateTimePicker = ({ value, onChange, placeholder, id, className }: { value
         <PopoverPrimitive.Content
           align="start"
           sideOffset={6}
-          className="z-70 w-80 rounded-2xl border border-white/10 bg-[#1c1c1c] p-4 text-white shadow-2xl outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
+          className="z-70 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-white/10 bg-[#1c1c1c] p-4 text-white shadow-2xl outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0"
         >
           <div className="mb-3 flex items-center justify-between">
             <button

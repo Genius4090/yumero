@@ -20,7 +20,7 @@ export const en: Dictionary = {
     label: "Language",
     ru: "Русский",
     en: "English",
-    uz: "Oʻzbekcha",
+    uz: "O'zbekcha",
   },
   nav: {
     home: "Home",
@@ -34,8 +34,6 @@ export const en: Dictionary = {
     cartCountAria: "Cart, items: {count}",
     searchPlaceholder: "Search in Yumero",
     closeSearch: "Close search",
-    openMenu: "Open menu",
-    closeMenu: "Close menu",
   },
   home: {
     menuButton: "Menu",
@@ -97,8 +95,10 @@ export const en: Dictionary = {
     items: p({ one: "item", other: "items" }),
     orders: p({ one: "order", other: "orders" }),
     stage: {
+      received: "Received",
       cooking: "Cooking",
       transit: "On the way",
+      arrived: "Courier is waiting",
       ready: "Ready for pickup",
       delivered: "Delivered",
       pickedUp: "Picked up",
@@ -480,6 +480,7 @@ export const en: Dictionary = {
       NEW: "New",
       COOKING: "Cooking",
       ON_THE_WAY: "On the way",
+      ARRIVED: "Courier arrived",
       READY: "Ready for pickup",
       DELIVERED: "Delivered",
       PICKED_UP: "Picked up",

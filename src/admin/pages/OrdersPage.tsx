@@ -13,11 +13,12 @@ import { useToast } from "../toast"
 import { Badge, Btn, Input, PageHeader, Pagination, Select, Table, type SelectOption } from "../ui"
 import { PAGE_SIZE } from "../usePagination"
 
-const STATUSES: orderStatusApi[] = ["NEW", "COOKING", "ON_THE_WAY", "READY", "DELIVERED", "PICKED_UP", "CANCELLED"]
+const STATUSES: orderStatusApi[] = ["NEW", "COOKING", "ON_THE_WAY", "ARRIVED", "READY", "DELIVERED", "PICKED_UP", "CANCELLED"]
 const TONE: Record<orderStatusApi, "amber" | "blue" | "green" | "red" | "neutral"> = {
   NEW: "amber",
   COOKING: "amber",
   ON_THE_WAY: "blue",
+  ARRIVED: "blue",
   READY: "blue",
   DELIVERED: "green",
   PICKED_UP: "green",
@@ -32,6 +33,8 @@ const nextStatuses = (o: orderType): orderStatusApi[] => {
     case "COOKING":
       return [o.mode === "delivery" ? "ON_THE_WAY" : "READY"]
     case "ON_THE_WAY":
+      return ["ARRIVED"]
+    case "ARRIVED":
       return ["DELIVERED"]
     case "READY":
       return ["PICKED_UP"]
@@ -75,12 +78,12 @@ const OrderRow = ({ order, highlight }: { order: orderType; highlight?: boolean 
             </span>
           )}
         </td>
-        <td className="text-[#c4c4c4]">{formatOrderDate(order.createdAt, tag)}</td>
+        <td className="text-[#c4c4c4] whitespace-nowrap">{formatOrderDate(order.createdAt, tag)}</td>
         <td>
           {order.customer ? (
             <>
               <span className="block font-medium">{order.customer.fullName || "—"}</span>
-              <span className="block text-xs text-[#8a8a8a]">{formatPhone(order.customer.phone)}</span>
+              <span className="block text-xs whitespace-nowrap text-[#8a8a8a]">{formatPhone(order.customer.phone)}</span>
             </>
           ) : (
             "—"
@@ -88,7 +91,7 @@ const OrderRow = ({ order, highlight }: { order: orderType; highlight?: boolean 
         </td>
         <td className="text-[#c4c4c4]">{order.mode === "delivery" ? t("order.delivery") : t("order.pickup")}</td>
         <td className="text-[#c4c4c4]">{order.payment === "cash" ? t("order.cash") : t("order.card")}</td>
-        <td className="font-semibold">{formatPrice(order.total)}</td>
+        <td className="font-semibold whitespace-nowrap">{formatPrice(order.total)}</td>
         <td>
           <Badge tone={TONE[order.status]}>{t(`admin.status.${order.status}`)}</Badge>
         </td>
@@ -121,7 +124,8 @@ const OrderRow = ({ order, highlight }: { order: orderType; highlight?: boolean 
       {open && (
         <tr className="bg-[#161616]">
           <td colSpan={8}>
-            <div className="grid grid-cols-[1fr_320px] gap-8 py-2">
+            {/* the row spans the (possibly wider, sideways-scrolling) table; the details stick to the visible left edge on phones */}
+            <div className="sticky left-0 grid w-[min(100%,calc(100vw-4rem))] grid-cols-1 gap-4 py-2 whitespace-normal md:grid-cols-[1fr_320px] md:gap-8">
               <ul className="divide-y divide-white/5">
                 {order.items.map((i, idx) => (
                   <li key={idx} className="flex items-center justify-between py-2 text-sm">
@@ -205,19 +209,26 @@ const OrdersPage = () => {
 
   return (
     <>
-      <PageHeader title={t("admin.nav.orders")}>
-        <Input
-          placeholder={t("admin.orders.searchPlaceholder")}
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value)
-            setPage(1)
-          }}
-          className="w-72"
-        />
-        <Btn onClick={() => orders.refetch()} aria-label={t("admin.common.refresh")} title={t("admin.common.refresh")} className="w-11 px-0">
-          <RefreshCw className={`size-4 ${orders.isFetching ? "animate-spin" : ""}`} />
-        </Btn>
+      {/* phones: title + "New order" on one line, search + refresh underneath; one row from sm */}
+      <PageHeader
+        title={t("admin.nav.orders")}
+        toolbar={
+          <>
+            <Input
+              placeholder={t("admin.orders.searchPlaceholder")}
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value)
+                setPage(1)
+              }}
+              className="min-w-0 flex-1 sm:w-72 sm:flex-none"
+            />
+            <Btn onClick={() => orders.refetch()} aria-label={t("admin.common.refresh")} title={t("admin.common.refresh")} className="w-10 shrink-0 px-0 sm:w-11 sm:px-0">
+              <RefreshCw className={`size-4 ${orders.isFetching ? "animate-spin" : ""}`} />
+            </Btn>
+          </>
+        }
+      >
         <Btn variant="primary" onClick={() => setCreating(true)}>
           <Plus className="size-4" />
           {t("admin.orders.create")}

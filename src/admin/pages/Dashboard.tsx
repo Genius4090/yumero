@@ -7,7 +7,7 @@ import { formatPrice } from "@/lib/format"
 import { useDashboard, type DashboardData } from "../api"
 import { Card, PageHeader } from "../ui"
 
-const STATUSES: orderStatusApi[] = ["NEW", "COOKING", "ON_THE_WAY", "READY", "DELIVERED", "PICKED_UP", "CANCELLED"]
+const STATUSES: orderStatusApi[] = ["NEW", "COOKING", "ON_THE_WAY", "ARRIVED", "READY", "DELIVERED", "PICKED_UP", "CANCELLED"]
 const PERIODS = [7, 30, 90] as const
 
 // one hue per chart (single series each): the site accent for money, a cool blue for counts
@@ -16,8 +16,10 @@ const ORDERS_COLOR = "#4da3ff"
 const GRID = "#2b2a2a"
 const AXIS_TEXT = "#8a8a8a"
 
+// phones: both groups share one row (3:2), pills stretch to fill; content-sized from sm
 const pillCls = (active: boolean) =>
-  `cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${active ? "bg-white text-black" : "text-[#c4c4c4] hover:text-white"}`
+  `flex-1 cursor-pointer rounded-full px-2 py-1.5 text-center text-xs font-semibold whitespace-nowrap transition-colors sm:flex-none sm:px-4 sm:text-sm ${active ? "bg-white text-black" : "text-[#c4c4c4] hover:text-white"}`
+const pillGroupCls = "flex min-w-0 rounded-full bg-[#2b2a2a] p-1 sm:flex-none"
 
 const compact = (n: number) => (n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1)}M` : n >= 1000 ? `${Math.round(n / 1000)}k` : String(n))
 
@@ -96,15 +98,15 @@ const Dashboard = () => {
 
   return (
     <>
-      <PageHeader title={t("admin.nav.dashboard")}>
-        <div className="flex rounded-full bg-[#2b2a2a] p-1">
+      <PageHeader title={t("admin.nav.dashboard")} stack>
+        <div className={`${pillGroupCls} flex-3`}>
           {PERIODS.map((p) => (
             <button key={p} type="button" onClick={() => setDays(p)} className={pillCls(days === p)}>
               {t(`admin.dashboard.period${p}`)}
             </button>
           ))}
         </div>
-        <div className="flex rounded-full bg-[#2b2a2a] p-1">
+        <div className={`${pillGroupCls} flex-2`}>
           <button type="button" onClick={() => setView("chart")} className={pillCls(view === "chart")}>
             {t("admin.common.chart")}
           </button>
@@ -114,22 +116,22 @@ const Dashboard = () => {
         </div>
       </PageHeader>
 
-      <div className={`grid grid-cols-2 gap-4 lg:grid-cols-5 ${isPending ? "opacity-60" : ""}`}>
+      <div className={`grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5 ${isPending ? "opacity-60" : ""}`}>
         {today.map((s) => (
           <Card key={s.key}>
             <p className="text-xs font-semibold tracking-wider text-[#8a8a8a] uppercase">{t(s.key)}</p>
-            <p className="mt-2 text-2xl font-semibold">{s.value}</p>
+            <p className="mt-2 text-xl font-semibold whitespace-nowrap sm:text-2xl">{s.value}</p>
           </Card>
         ))}
       </div>
 
-      <div className={`mt-6 grid grid-cols-3 gap-4 ${isPending ? "opacity-60" : ""}`}>
+      <div className={`mt-4 grid grid-cols-1 gap-4 sm:mt-6 sm:grid-cols-3 ${isPending ? "opacity-60" : ""}`}>
         {period.map((s) => (
           <Card key={s.key} className="border border-white/5">
             <p className="text-xs font-semibold tracking-wider text-[#8a8a8a] uppercase">
               {t(s.key)} · {t(`admin.dashboard.period${days}`)}
             </p>
-            <p className="mt-2 text-2xl font-semibold">{s.value}</p>
+            <p className="mt-2 text-xl font-semibold whitespace-nowrap sm:text-2xl">{s.value}</p>
           </Card>
         ))}
       </div>
@@ -141,7 +143,7 @@ const Dashboard = () => {
         </div>
       )}
       {data && view === "table" && (
-        <Card className="mt-6 max-h-96 overflow-y-auto p-0">
+        <Card className="mt-6 max-h-96 overflow-y-auto p-0 sm:p-0">
           <table className="w-full text-left text-sm [&_td]:px-4 [&_td]:py-2 [&_th]:px-4 [&_th]:py-3 [&_th]:text-xs [&_th]:font-semibold [&_th]:tracking-wider [&_th]:text-[#8a8a8a] [&_th]:uppercase [&_tbody_tr]:border-t [&_tbody_tr]:border-white/5">
             <thead>
               <tr>

@@ -6,6 +6,7 @@ import { mediaUrl } from "@/lib/api"
 import { pickText } from "@/lib/localized"
 import { useSettings } from "@/context/SettingsContext"
 import { useCart } from "@/context/CartContext"
+import { useOpenCart } from "@/hooks/useOpenCart"
 import { useI18n } from "@/i18n/useI18n"
 import QuantityStepper from "./QuantityStepper"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "./ui/dialog"
@@ -18,7 +19,8 @@ interface ProductModalProps {
 const ProductModal = ({ product, onClose }: ProductModalProps) => {
   const { t, locale } = useI18n()
   const { settings } = useSettings()
-  const { quantityOf, addItem, setQuantity, subtotal, count, setSidebarOpen } = useCart()
+  const { quantityOf, addItem, setQuantity, subtotal, count } = useCart()
+  const openCartView = useOpenCart()
 
   const handleOpenChange = (open: boolean) => {
     if (!open) onClose()
@@ -35,7 +37,7 @@ const ProductModal = ({ product, onClose }: ProductModalProps) => {
 
   const openCart = () => {
     if (settings.closeProductAfterAdd) handleOpenChange(false)
-    setSidebarOpen(true)
+    openCartView()
   }
 
   return (

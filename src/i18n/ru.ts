@@ -20,7 +20,7 @@ export const ru = {
     label: "Язык",
     ru: "Русский",
     en: "English",
-    uz: "Oʻzbekcha",
+    uz: "O'zbekcha",
   },
   nav: {
     home: "Главная",
@@ -34,8 +34,6 @@ export const ru = {
     cartCountAria: "Корзина, товаров: {count}",
     searchPlaceholder: "Поиск в Yumero",
     closeSearch: "Закрыть поиск",
-    openMenu: "Открыть меню",
-    closeMenu: "Закрыть меню",
   },
   home: {
     menuButton: "Меню",
@@ -97,8 +95,10 @@ export const ru = {
     items: p({ one: "товар", few: "товара", many: "товаров", other: "товаров" }),
     orders: p({ one: "заказ", few: "заказа", many: "заказов", other: "заказов" }),
     stage: {
+      received: "Принят",
       cooking: "Готовится",
       transit: "В пути",
+      arrived: "Курьер ждёт вас",
       ready: "Готов к выдаче",
       delivered: "Доставлен",
       pickedUp: "Выдан",
@@ -480,6 +480,7 @@ export const ru = {
       NEW: "Новый",
       COOKING: "Готовится",
       ON_THE_WAY: "В пути",
+      ARRIVED: "Курьер на месте",
       READY: "Готов к выдаче",
       DELIVERED: "Доставлен",
       PICKED_UP: "Выдан",

@@ -142,7 +142,7 @@ const SettingsForm = ({ initial }: { initial: restaurantSettingsType }) => {
             checked={form.isOpen}
             onChange={(v) => set("isOpen", v)}
           />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Label label={t("admin.settings.name")}>
               <Input
                 value={form.name}
@@ -183,7 +183,7 @@ const SettingsForm = ({ initial }: { initial: restaurantSettingsType }) => {
                   lng: Number(lng.toFixed(6)),
                 })
               }
-              className="h-80 w-full"
+              className="h-64 w-full sm:h-80"
             />
             {/* MapPicker isolates its own stacking context, so this sibling sits above the map and swallows every touch, drag and wheel event. */}
             {!mapEditing && (
@@ -235,7 +235,7 @@ const SettingsForm = ({ initial }: { initial: restaurantSettingsType }) => {
         </Section>
 
         <Section title={t("admin.settings.sectionFees")}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Label label={t("admin.settings.packagingFee")}>
               <NumberInput
                 min={0}
@@ -263,7 +263,7 @@ const SettingsForm = ({ initial }: { initial: restaurantSettingsType }) => {
           title={t("admin.settings.sectionSocials")}
           hint={t("admin.settings.socialsHint")}
         >
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {SOCIALS.map((s) => (
               <Label key={s.key} label={t(s.label)}>
                 <Input

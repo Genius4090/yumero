@@ -70,10 +70,10 @@ const StaffPage = () => {
                     </span>
                   </span>
                 </td>
-                <td className="text-[#c4c4c4]">{formatPhone(u.phone)}</td>
+                <td className="text-[#c4c4c4] whitespace-nowrap">{formatPhone(u.phone)}</td>
                 <td>{isSuper ? <Badge tone="amber">{t("admin.roles.SUPERADMIN")}</Badge> : <Badge tone="blue">{t("admin.roles.ADMIN")}</Badge>}</td>
                 <td className="text-[#c4c4c4]">{u.ordersCreated ?? 0}</td>
-                <td className="text-[#c4c4c4]">{new Date(u.createdAt).toLocaleDateString(tag)}</td>
+                <td className="text-[#c4c4c4] whitespace-nowrap">{new Date(u.createdAt).toLocaleDateString(tag)}</td>
                 <td>
                   <div className="flex justify-end gap-2">
                     {(!isSuper || isMe) && (

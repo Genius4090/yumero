@@ -131,7 +131,8 @@ const Checkout = () => {
       const order = await createOrder.mutateAsync({
         mode,
         paymentMethod: payment,
-        ...(isDelivery ? (usingSaved ? { addressId: selected.id } : { addressText: address.trim() }) : {}),
+        // the text rides along with a saved address, so the order still goes through if it was deleted on another device
+        ...(isDelivery ? (usingSaved ? { addressId: selected.id, addressText: address.trim() } : { addressText: address.trim() }) : {}),
         comment: comment.trim(),
         promoCode: promo?.code,
         items: items.map((i) => ({ productId: i.product.id, quantity: i.quantity })),

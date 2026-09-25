@@ -208,7 +208,7 @@ const CreateOrderDialog = ({ open, onOpenChange, onCreated }: { open: boolean; o
               </>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Label label={t("order.payment")}>
                 <Select
                   value={payment}
@@ -239,7 +239,7 @@ const CreateOrderDialog = ({ open, onOpenChange, onCreated }: { open: boolean; o
               <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-[#8a8a8a]" />
               <Input value={productQuery} onChange={(e) => setProductQuery(e.target.value)} placeholder={t("admin.orders.searchProducts")} className="pl-11" />
             </div>
-            <ul className="flex max-h-120 flex-col gap-2 overflow-y-auto pr-3 [scrollbar-color:#3a3939_transparent] [scrollbar-gutter:stable] [scrollbar-width:thin]">
+            <ul className="flex max-h-72 flex-col gap-2 overflow-y-auto pr-3 [scrollbar-color:#3a3939_transparent] [scrollbar-gutter:stable] [scrollbar-width:thin] lg:max-h-120">
               {productSearch.isPending && <li className="px-2 py-3 text-sm text-[#8a8a8a]">{t("admin.common.loading")}</li>}
               {!productSearch.isPending && availableProducts.length === 0 && <li className="px-2 py-3 text-sm text-[#8a8a8a]">{t("admin.common.empty")}</li>}
               {availableProducts.map((p) => (
@@ -287,7 +287,7 @@ const CreateOrderDialog = ({ open, onOpenChange, onCreated }: { open: boolean; o
                         <Plus className="size-3.5" />
                       </button>
                     </span>
-                    <span className="w-24 text-right font-semibold">{formatPrice(l.product.price * l.quantity)}</span>
+                    <span className="w-20 text-right font-semibold whitespace-nowrap sm:w-24">{formatPrice(l.product.price * l.quantity)}</span>
                     <button type="button" onClick={() => setQty(l.product.id, 0)} className="cursor-pointer text-[#8a8a8a] hover:text-[#ff6b6b]" aria-label={t("stepper.remove")}>
                       <Trash2 className="size-4" />
                     </button>

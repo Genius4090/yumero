@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Checkout, Home, NotFound, Orders, Profile } from "./pages";
+import { Cart, Checkout, Home, NotFound, Orders, Profile } from "./pages";
 import { RootLayout } from "./layouts";
 import { Menu } from "./modules";
 import { AuthProvider } from "./context/AuthContext";
@@ -39,6 +39,10 @@ const router = createBrowserRouter([
       {
         path:"profile",
         element: <Profile/>
+      },
+      {
+        path:"cart",
+        element: <Cart/>
       },
       {
         path:"checkout",

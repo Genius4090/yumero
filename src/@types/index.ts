@@ -78,7 +78,7 @@ export type orderModeType = "delivery" | "pickup"
 export type orderPaymentType = "cash" | "card"
 
 /** Backend order status; the UI derives its display status from it in `@/lib/orders`. */
-export type orderStatusApi = "NEW" | "COOKING" | "ON_THE_WAY" | "READY" | "DELIVERED" | "PICKED_UP" | "CANCELLED"
+export type orderStatusApi = "NEW" | "COOKING" | "ON_THE_WAY" | "ARRIVED" | "READY" | "DELIVERED" | "PICKED_UP" | "CANCELLED"
 
 export type orderSourceApi = "WEB" | "ADMIN"
 

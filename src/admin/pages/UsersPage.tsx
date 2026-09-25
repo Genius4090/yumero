@@ -35,7 +35,7 @@ const UsersPage = () => {
 
   return (
     <>
-      <PageHeader title={t("admin.users.title")}>
+      <PageHeader title={t("admin.users.title")} stack>
         <Input
           placeholder={t("admin.users.searchPlaceholder")}
           value={search}
@@ -43,7 +43,7 @@ const UsersPage = () => {
             setSearch(e.target.value)
             setPage(1)
           }}
-          className="w-72"
+          className="min-w-0 flex-1 sm:w-72 sm:flex-none"
         />
         <Btn variant="primary" onClick={() => setEditing("new")}>
           <Plus className="size-4" />
@@ -88,10 +88,10 @@ const UsersPage = () => {
                   </span>
                 </span>
               </td>
-              <td className="text-[#c4c4c4]">{formatPhone(u.phone)}</td>
+              <td className="text-[#c4c4c4] whitespace-nowrap">{formatPhone(u.phone)}</td>
               <td className="text-[#c4c4c4]">{u.ordersCount}</td>
-              <td className="text-[#c4c4c4]">{fmtDate(u.lastOrderAt)}</td>
-              <td className="text-[#c4c4c4]">{fmtDate(u.createdAt)}</td>
+              <td className="text-[#c4c4c4] whitespace-nowrap">{fmtDate(u.lastOrderAt)}</td>
+              <td className="text-[#c4c4c4] whitespace-nowrap">{fmtDate(u.createdAt)}</td>
               <td>
                 <div className="flex justify-end gap-2">
                   <Btn size="sm" onClick={() => setEditing(u)}>

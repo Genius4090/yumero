@@ -44,7 +44,7 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           // 1rem side margin on phones; never taller than the viewport (scrolls inside instead)
-          "fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-105 max-h-[calc(100dvh-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl border border-white/10 bg-[#1c1c1c] p-6 text-white shadow-2xl outline-none duration-200 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 sm:p-8",
+          "fixed top-1/2 left-1/2 z-50 w-[calc(100%-2rem)] max-w-105 max-h-[calc(100dvh-2rem)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto overscroll-contain rounded-3xl border border-white/10 bg-[#1c1c1c] p-6 text-white shadow-2xl outline-none duration-200 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 sm:p-8",
           className
         )}
         {...props}

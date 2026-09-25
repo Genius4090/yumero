@@ -229,7 +229,8 @@ export const Btn = ({ variant = "ghost", size = "md", className, type = "button"
     type={type}
     className={cn(
       "inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl font-semibold whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:cursor-not-allowed disabled:opacity-50",
-      size === "sm" ? "h-8 px-3 text-sm" : "h-11 px-5 text-sm",
+      // md is a notch shorter on phones so header rows stay compact
+      size === "sm" ? "h-8 px-3 text-sm" : "h-10 px-4 text-sm sm:h-11 sm:px-5",
       btnVariants[variant],
       className
     )}
@@ -280,12 +281,34 @@ export const AvatarThumb = ({ url, name, className }: { url: string | null | und
   )
 }
 
-export const Card = ({ className, ...props }: ComponentProps<"div">) => <div className={cn("rounded-2xl bg-[#1c1c1c] p-6", className)} {...props} />
+export const Card = ({ className, ...props }: ComponentProps<"div">) => <div className={cn("rounded-2xl bg-[#1c1c1c] p-4 sm:p-6", className)} {...props} />
 
-export const PageHeader = ({ title, children, className }: { title: string; children?: ReactNode; className?: string }) => (
-  <div className={cn("mb-6 flex flex-wrap items-center justify-between gap-4", className)}>
-    <h1 className="text-2xl font-semibold">{title}</h1>
-    {children && <div className="flex items-center gap-3">{children}</div>}
+/**
+ * Title with its controls. From `sm` everything sits on one row: title … toolbar, children.
+ * On phones: `children` share the title's row (right-aligned) unless `stack`, which gives them their own
+ * full-width row; `toolbar` (search fields etc.) always gets its own full-width row on phones.
+ */
+export const PageHeader = ({
+  title,
+  children,
+  toolbar,
+  className,
+  stack = false,
+}: {
+  title: string
+  children?: ReactNode
+  toolbar?: ReactNode
+  className?: string
+  stack?: boolean
+}) => (
+  <div className={cn("mb-5 flex flex-wrap items-center gap-3 sm:mb-6 sm:gap-4", className)}>
+    <h1 className="mr-auto text-2xl font-semibold">{title}</h1>
+    {toolbar && <div className="order-last flex w-full items-center gap-2 sm:order-0 sm:w-auto sm:gap-3">{toolbar}</div>}
+    {children && (
+      <div className={cn("flex flex-wrap items-center justify-end gap-2 sm:order-0 sm:w-auto sm:flex-none sm:gap-3", stack ? "order-last w-full" : "min-w-0")}>
+        {children}
+      </div>
+    )}
   </div>
 )
 
@@ -295,9 +318,10 @@ export const Notice = ({ tone, children }: { tone: "error" | "success"; children
   </p>
 )
 
+/** Data table; cells never wrap, so on narrow screens the table grows and scrolls sideways inside its card. */
 export const Table = ({ children }: { children: ReactNode }) => (
-  <div className="overflow-x-auto rounded-2xl bg-[#1c1c1c]">
-    <table className="w-full text-left text-sm [&_td]:px-4 [&_td]:py-3 [&_th]:px-4 [&_th]:py-3 [&_th]:text-xs [&_th]:font-semibold [&_th]:tracking-wider [&_th]:text-[#8a8a8a] [&_th]:uppercase [&_tbody_tr]:border-t [&_tbody_tr]:border-white/5">
+  <div className="overflow-x-auto rounded-2xl bg-[#1c1c1c] [scrollbar-color:#3a3939_transparent] [scrollbar-width:thin]">
+    <table className="w-full min-w-160 text-left text-sm [&_td]:px-4 [&_td]:py-3 [&_td]:whitespace-nowrap [&_th]:px-4 [&_th]:py-3 [&_th]:text-xs [&_th]:font-semibold [&_th]:tracking-wider [&_th]:whitespace-nowrap [&_th]:text-[#8a8a8a] [&_th]:uppercase [&_tbody_tr]:border-t [&_tbody_tr]:border-white/5">
       {children}
     </table>
   </div>
@@ -310,7 +334,7 @@ export const Pagination = ({ page, pages, total, pageSize, onChange }: { page: n
   const from = (page - 1) * pageSize + 1
   const to = Math.min(total, page * pageSize)
   return (
-    <div className="mt-4 flex items-center justify-between gap-4 text-sm text-[#c4c4c4]">
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-[#c4c4c4] sm:gap-4">
       <span className="text-[#8a8a8a]">{t("admin.common.showing", { from, to, total })}</span>
       <div className="flex items-center gap-2">
         <Btn size="sm" disabled={page <= 1} onClick={() => onChange(page - 1)} aria-label="‹" className="w-8 px-0">

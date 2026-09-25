@@ -104,11 +104,22 @@ const OrderCard = ({ order, onOpen }: { order: orderType; onOpen: () => void }) 
   )
 }
 
-/** Right-hand drawer with the current order. */
-const CartSidebar = ({ children }: { children: ReactNode }) => {
+interface CartPanelProps {
+  /** Heading element (Dialog title inside the drawer, h1 on the cart page). */
+  title: ReactNode
+  /** Extra header control, e.g. the drawer's close button. */
+  headerExtra?: ReactNode
+  /** `drawer`: lists scroll inside a fixed-height panel; `page`: the page scrolls and the checkout button sticks above the bottom bar. */
+  layout: "drawer" | "page"
+  /** Called right before navigating away (the drawer closes itself). */
+  onNavigate?: () => void
+}
+
+/** Cart + orders tabs with the item cards and the checkout button; shared by the desktop drawer and the phone cart page. */
+export const CartPanel = ({ title, headerExtra, layout, onNavigate }: CartPanelProps) => {
   const { t, locale } = useI18n()
   const navigate = useNavigate()
-  const { items, count, subtotal, clear, sidebarOpen: open, setSidebarOpen: setOpen } = useCart()
+  const { items, count, subtotal, clear } = useCart()
   const { orders } = useOrders()
   const { status } = useAuth()
   const authed = status === "authed"
@@ -116,28 +127,21 @@ const CartSidebar = ({ children }: { children: ReactNode }) => {
   const [selected, setSelected] = useState<productType | null>(null)
 
   const goToCheckout = () => {
-    setOpen(false)
+    onNavigate?.()
     navigate("/checkout")
   }
 
   const goToOrder = (order: orderType) => {
-    setOpen(false)
+    onNavigate?.()
     navigate(`/orders#${order.id}`)
   }
 
-  return (
-    <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
-      {children ? <DialogPrimitive.Trigger asChild>{children}</DialogPrimitive.Trigger> : null}
+  const listClass = layout === "drawer" ? "mt-8 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-2" : "mt-8 flex flex-col gap-4"
 
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50 duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
-        <DialogPrimitive.Content
-          aria-describedby={undefined}
-          // full-screen sheet on phones, a 460px drawer from sm
-          className="fixed inset-y-0 right-0 z-50 flex w-full flex-col bg-[#1c1c1c] p-4 text-white shadow-2xl outline-none duration-300 ease-out data-open:animate-in data-open:slide-in-from-right data-closed:animate-out data-closed:slide-out-to-right sm:w-115 sm:max-w-[95vw] sm:p-6"
-        >
+  return (
+    <>
           <div className="flex items-center justify-between">
-            <DialogPrimitive.Title className="text-2xl font-semibold">{t("cart.title")}</DialogPrimitive.Title>
+            {title}
             <div className="flex items-center gap-2">
               {items.length > 0 && (
                 <button
@@ -150,12 +154,7 @@ const CartSidebar = ({ children }: { children: ReactNode }) => {
                   <Trash2 className="size-5" />
                 </button>
               )}
-              <DialogPrimitive.Close
-                aria-label={t("common.close")}
-                className="grid size-10 cursor-pointer place-items-center rounded-full bg-[#2b2a2a] text-white transition-colors hover:bg-[#3d3c3c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-              >
-                <X className="size-5" />
-              </DialogPrimitive.Close>
+              {headerExtra}
             </div>
           </div>
 
@@ -180,7 +179,7 @@ const CartSidebar = ({ children }: { children: ReactNode }) => {
           </div>
 
           {tab === "cart" && (
-            <div className="mt-8 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-2">
+            <div className={listClass}>
               {items.length === 0 && <p className="text-center text-[#c4c4c4]">{t("cart.empty")}</p>}
 
               {items.map((item) => (
@@ -212,7 +211,7 @@ const CartSidebar = ({ children }: { children: ReactNode }) => {
           )}
 
           {tab === "orders" && (
-            <div className="mt-8 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-2">
+            <div className={listClass}>
               {orders.length === 0 && <p className="text-center text-[#c4c4c4]">{t("cart.noOrders")}</p>}
 
               {orders.map((order) => (
@@ -222,21 +221,56 @@ const CartSidebar = ({ children }: { children: ReactNode }) => {
           )}
 
           {tab === "cart" && items.length > 0 && (
-            /* guests can fill the cart, but checkout needs an account: the button shows "Log in" and stays disabled */
-            <button
-              type="button"
-              onClick={goToCheckout}
-              disabled={!authed}
-              /* one line at every width: the count bubble only from sm, and the label can only ellipsize, never wrap */
-              className="mt-4 flex w-full cursor-pointer items-center gap-3 rounded-xl bg-[#ff0099] px-4 py-3.5 text-sm font-semibold whitespace-nowrap text-white transition-colors hover:bg-[#ff2bab] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:cursor-not-allowed disabled:bg-[#3a3939] disabled:text-[#8a8a8a] disabled:hover:bg-[#3a3939] sm:gap-4 sm:py-3 sm:pr-5 sm:pl-3 sm:text-base"
-            >
-              <span className={`hidden size-8 shrink-0 place-items-center rounded-full text-sm sm:grid ${authed ? "bg-black/60" : "bg-black/30"}`}>{count}</span>
-              <span className="min-w-0 truncate">{authed ? t("cart.checkout") : t("nav.login")}</span>
-              <span className="ml-auto shrink-0">{formatPrice(subtotal)}</span>
-            </button>
+            /* guests can fill the cart, but checkout needs an account: the button shows "Log in" and stays disabled.
+               On the cart page the button sticks to the bottom of the screen, just above the bottom navigation bar. */
+            <div className={layout === "page" ? "sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] mt-2 bg-background py-2" : "mt-4"}>
+              <button
+                type="button"
+                onClick={goToCheckout}
+                disabled={!authed}
+                /* one line at every width: the count bubble only from sm, and the label can only ellipsize, never wrap */
+                className="flex w-full cursor-pointer items-center gap-3 rounded-xl bg-[#ff0099] px-4 py-3.5 text-sm font-semibold whitespace-nowrap text-white transition-colors hover:bg-[#ff2bab] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 disabled:cursor-not-allowed disabled:bg-[#3a3939] disabled:text-[#8a8a8a] disabled:hover:bg-[#3a3939] sm:gap-4 sm:py-3 sm:pr-5 sm:pl-3 sm:text-base"
+              >
+                <span className={`hidden size-8 shrink-0 place-items-center rounded-full text-sm sm:grid ${authed ? "bg-black/60" : "bg-black/30"}`}>{count}</span>
+                <span className="min-w-0 truncate">{authed ? t("cart.checkout") : t("nav.login")}</span>
+                <span className="ml-auto shrink-0">{formatPrice(subtotal)}</span>
+              </button>
+            </div>
           )}
 
           <ProductModal product={selected} onClose={() => setSelected(null)} />
+    </>
+  )
+}
+
+/** Right-hand drawer with the current order (desktop; phones open the /cart page instead). */
+const CartSidebar = ({ children }: { children: ReactNode }) => {
+  const { t } = useI18n()
+  const { sidebarOpen: open, setSidebarOpen: setOpen } = useCart()
+
+  return (
+    <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
+      {children ? <DialogPrimitive.Trigger asChild>{children}</DialogPrimitive.Trigger> : null}
+
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50 duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
+        <DialogPrimitive.Content
+          aria-describedby={undefined}
+          className="fixed inset-y-0 right-0 z-50 flex w-115 max-w-[95vw] flex-col bg-[#1c1c1c] p-6 text-white shadow-2xl outline-none duration-300 ease-out data-open:animate-in data-open:slide-in-from-right data-closed:animate-out data-closed:slide-out-to-right"
+        >
+          <CartPanel
+            layout="drawer"
+            onNavigate={() => setOpen(false)}
+            title={<DialogPrimitive.Title className="text-2xl font-semibold">{t("cart.title")}</DialogPrimitive.Title>}
+            headerExtra={
+              <DialogPrimitive.Close
+                aria-label={t("common.close")}
+                className="grid size-10 cursor-pointer place-items-center rounded-full bg-[#2b2a2a] text-white transition-colors hover:bg-[#3d3c3c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+              >
+                <X className="size-5" />
+              </DialogPrimitive.Close>
+            }
+          />
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>

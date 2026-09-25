@@ -1,4 +1,4 @@
-import { useCallback, useState, useSyncExternalStore } from "react"
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react"
 import useEmblaCarousel from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useI18n } from "@/i18n/useI18n"
@@ -95,6 +95,45 @@ const BannerCarousel = ({ items, loading = false }: BannerCarouselProps) => {
   )
   const selected = useSyncExternalStore(subscribe, () => embla?.selectedScrollSnap() ?? 0)
   const snapCount = useSyncExternalStore(subscribe, () => embla?.scrollSnapList().length ?? 0)
+
+  // Phones: once a touch swipe is clearly horizontal, stop the browser from also scrolling the page
+  // vertically (that small vertical drift hides/shows the address bar and makes the page jump).
+  useEffect(() => {
+    const node = embla?.rootNode()
+    if (!node) return
+    let start: { x: number; y: number } | null = null
+    let horizontal = false
+    const onStart = (e: TouchEvent) => {
+      const t = e.touches[0]
+      start = t ? { x: t.clientX, y: t.clientY } : null
+      horizontal = false
+    }
+    const onMove = (e: TouchEvent) => {
+      const t = e.touches[0]
+      if (!start || !t) return
+      if (!horizontal) {
+        const dx = Math.abs(t.clientX - start.x)
+        const dy = Math.abs(t.clientY - start.y)
+        if (dx < 6 && dy < 6) return
+        horizontal = dx > dy
+      }
+      if (horizontal && e.cancelable) e.preventDefault()
+    }
+    const onEnd = () => {
+      start = null
+      horizontal = false
+    }
+    node.addEventListener("touchstart", onStart, { passive: true })
+    node.addEventListener("touchmove", onMove, { passive: false })
+    node.addEventListener("touchend", onEnd, { passive: true })
+    node.addEventListener("touchcancel", onEnd, { passive: true })
+    return () => {
+      node.removeEventListener("touchstart", onStart)
+      node.removeEventListener("touchmove", onMove)
+      node.removeEventListener("touchend", onEnd)
+      node.removeEventListener("touchcancel", onEnd)
+    }
+  }, [embla])
 
   if (!loading && items.length === 0) return null
 

@@ -46,7 +46,8 @@ const Footer = () => {
         viewBox="0 0 1440 64"
         preserveAspectRatio="none"
         aria-hidden
-        className="block h-10 w-full fill-[#1F1F1F] md:h-16"
+        // -mb-px: overlap the body by a pixel so subpixel rounding can't leave a hairline of page background between them
+        className="-mb-px block h-10 w-full fill-[#1F1F1F] md:h-16"
       >
         <path d="M0,64 L0,60 Q720,-28 1440,60 L1440,64 Z" />
       </svg>

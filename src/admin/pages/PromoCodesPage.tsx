@@ -44,7 +44,7 @@ const PromoForm = ({ promo, onClose }: { promo: promoCodeType | null; onClose: (
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Label label={t("admin.common.code")}>
           <Input value={form.code} onChange={(e) => set("code", e.target.value.toUpperCase())} pattern="[A-Za-z0-9_-]{3,32}" placeholder="YUMERO10" required className="uppercase" />
         </Label>
@@ -147,9 +147,9 @@ const PromoCodesPage = () => {
             <tr key={p.id}>
               <td className="font-mono font-semibold">{p.code}</td>
               <td>−{p.percent}%</td>
-              <td className="text-[#c4c4c4]">{fmt(p.validFrom)}</td>
-              <td className="text-[#c4c4c4]">{fmt(p.validTo)}</td>
-              <td className="text-[#c4c4c4]">
+              <td className="text-[#c4c4c4] whitespace-nowrap">{fmt(p.validFrom)}</td>
+              <td className="text-[#c4c4c4] whitespace-nowrap">{fmt(p.validTo)}</td>
+              <td className="text-[#c4c4c4] whitespace-nowrap">
                 {p.usedCount} / {p.maxUses ?? "∞"}
               </td>
               <td>{p.isActive ? <Badge tone="green">{t("admin.common.active")}</Badge> : <Badge tone="red">{t("admin.common.inactive")}</Badge>}</td>

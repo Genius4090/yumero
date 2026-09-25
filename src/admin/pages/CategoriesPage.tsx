@@ -43,7 +43,7 @@ const CategoryForm = ({ category, onClose }: { category: AdminCategory | null; o
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
       <LocalizedInput label={t("admin.common.name")} value={form.name} onChange={(v) => set("name", v)} />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Label label={t("admin.common.slug")}>
           <Input value={form.slug} onChange={(e) => set("slug", e.target.value)} pattern="[a-z0-9-]{2,40}" placeholder="burgers" required />
         </Label>
@@ -107,8 +107,9 @@ const CategoriesPage = () => {
 
       {categories.isPending && <p className="text-[#8a8a8a]">{t("admin.common.loading")}</p>}
 
-      <div className="overflow-hidden rounded-2xl bg-[#1c1c1c]">
-        <div className="grid grid-cols-[32px_40px_1fr_140px_80px_110px_200px] items-center gap-3 px-4 py-3 text-xs font-semibold tracking-wider text-[#8a8a8a] uppercase">
+      {/* rows keep their column layout and scroll sideways on narrow screens */}
+      <div className="overflow-x-auto rounded-2xl bg-[#1c1c1c] [scrollbar-color:#3a3939_transparent] [scrollbar-width:thin]">
+        <div className="grid min-w-180 grid-cols-[32px_40px_1fr_140px_80px_110px_200px] items-center gap-3 px-4 py-3 text-xs font-semibold tracking-wider whitespace-nowrap text-[#8a8a8a] uppercase">
           <span />
           <span>{t("admin.common.color")}</span>
           <span>{t("admin.common.name")}</span>
@@ -119,7 +120,7 @@ const CategoriesPage = () => {
         </div>
         <SortableList items={pager.slice} onReorder={handleReorder} disabled={reorder.isPending}>
           {(c, handle) => (
-            <div className="grid grid-cols-[32px_40px_1fr_140px_80px_110px_200px] items-center gap-3 border-t border-white/5 bg-[#1c1c1c] px-4 py-3 text-sm">
+            <div className="grid min-w-180 grid-cols-[32px_40px_1fr_140px_80px_110px_200px] items-center gap-3 border-t border-white/5 bg-[#1c1c1c] px-4 py-3 text-sm">
               {handle}
               <span className="block size-8 rounded-lg" style={{ backgroundColor: c.color }} />
               <span className="truncate font-medium">{pickText(c.name, locale)}</span>

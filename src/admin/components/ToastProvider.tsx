@@ -44,7 +44,8 @@ const ToastProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ToastContext.Provider value={api}>
       {children}
-      <div className="pointer-events-none fixed top-5 right-5 z-100 flex flex-col items-end gap-2" aria-live="polite">
+      {/* phones: full-width stack under the top bar; from sm a compact stack in the top-right corner */}
+      <div className="pointer-events-none fixed inset-x-4 top-4 z-100 flex flex-col items-stretch gap-2 sm:inset-x-auto sm:top-5 sm:right-5 sm:items-end" aria-live="polite">
         <AnimatePresence initial={false}>
           {toasts.map((toast) => {
             const Icon = ICON[toast.tone]
@@ -61,7 +62,7 @@ const ToastProvider = ({ children }: { children: ReactNode }) => {
                 onClick={() => remove(toast.id)}
                 onMouseEnter={() => window.clearTimeout(timers.current.get(toast.id))}
                 onMouseLeave={() => schedule(toast.id)}
-                className="pointer-events-auto flex max-w-sm cursor-pointer items-center gap-2.5 rounded-xl border border-white/10 bg-[#1c1c1c] py-3 pr-4 pl-3.5 text-left text-sm font-medium text-white shadow-xl shadow-black/40 outline-none"
+                className="pointer-events-auto flex cursor-pointer items-center gap-2.5 rounded-xl border border-white/10 bg-[#1c1c1c] py-3 pr-4 pl-3.5 text-left text-sm font-medium text-white shadow-xl shadow-black/40 outline-none sm:max-w-sm"
               >
                 <Icon className={cn("size-4 shrink-0", ACCENT[toast.tone])} />
                 <span className="leading-snug">{toast.text}</span>

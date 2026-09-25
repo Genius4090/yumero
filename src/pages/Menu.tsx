@@ -4,20 +4,9 @@ import type { productType } from "@/@types"
 import { useCategories, useProducts } from "@/api/hooks"
 import { FoodCard, ProductModal, SearchBar } from "@/components"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ALL_TAB_ID, MENU_TAB_KEY, POPULAR_TAB_ID } from "@/data/categories"
+import { ALL_TAB_ID, POPULAR_TAB_ID, readMenuTab, saveMenuTab } from "@/data/categories"
 import { useI18n } from "@/i18n/useI18n"
 import { pickText } from "@/lib/localized"
-
-const readStoredTab = () => {
-  try {
-    const stored = localStorage.getItem(MENU_TAB_KEY)
-    if (stored === null) return POPULAR_TAB_ID
-    const id = Number(stored)
-    return Number.isFinite(id) ? id : POPULAR_TAB_ID
-  } catch {
-    return POPULAR_TAB_ID
-  }
-}
 
 const useDebounced = <T,>(value: T, delay: number) => {
   const [debounced, setDebounced] = useState(value)
@@ -31,7 +20,7 @@ const useDebounced = <T,>(value: T, delay: number) => {
 const Menu = () => {
   const { t, locale } = useI18n()
   const [searchParams, setSearchParams] = useSearchParams()
-  const [activeId, setActiveId] = useState<number>(readStoredTab)
+  const [activeId, setActiveId] = useState<number>(readMenuTab)
   const urlQuery = searchParams.get("q") ?? ""
   const [query, setQuery] = useState(urlQuery)
   const [seenUrlQuery, setSeenUrlQuery] = useState(urlQuery)
@@ -113,11 +102,7 @@ const Menu = () => {
     setActiveId(id)
     setQuery("")
     if (searchParams.has("q")) setSearchParams({}, { replace: true })
-    try {
-      localStorage.setItem(MENU_TAB_KEY, String(id))
-    } catch {
-      // ignore
-    }
+    saveMenuTab(id)
   }
 
   const items = products.data?.items ?? []

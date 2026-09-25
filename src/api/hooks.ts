@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import type { addressType, bannerType, categoryType, orderType, productType, restaurantSettingsType } from "@/@types"
-import { apiFetch } from "@/lib/api"
+import { ApiError, apiFetch } from "@/lib/api"
 import { isActiveOrder } from "@/lib/orders"
 
 export const queryKeys = {
@@ -53,8 +53,9 @@ export const useSettings = () =>
 
 /* ---------- addresses ---------- */
 
+/** Refetched on tab focus and every 5 min while the tab is visible, so changes from the user's other devices show up. */
 export const useAddressesQuery = (enabled: boolean) =>
-  useQuery({ queryKey: queryKeys.addresses, queryFn: () => apiFetch<addressType[]>("/api/addresses"), enabled })
+  useQuery({ queryKey: queryKeys.addresses, queryFn: () => apiFetch<addressType[]>("/api/addresses"), enabled, refetchInterval: 5 * 60_000 })
 
 export const useCreateAddress = () => {
   const qc = useQueryClient()
@@ -64,11 +65,25 @@ export const useCreateAddress = () => {
   })
 }
 
+/** Removed from the list at once, restored on failure, refetched afterwards. */
 export const useDeleteAddress = () => {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (id: string) => apiFetch<void>(`/api/addresses/${id}`, { method: "DELETE" }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.addresses }),
+    // already deleted on another device (older API answered 404): the goal is reached, not an error
+    mutationFn: (id: string) =>
+      apiFetch<void>(`/api/addresses/${id}`, { method: "DELETE" }).catch((err: unknown) => {
+        if (!(err instanceof ApiError && err.status === 404)) throw err
+      }),
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: queryKeys.addresses })
+      const previous = qc.getQueryData<addressType[]>(queryKeys.addresses)
+      qc.setQueryData<addressType[]>(queryKeys.addresses, (old = []) => old.filter((a) => a.id !== id))
+      return { previous }
+    },
+    onError: (_err, _id, ctx) => {
+      if (ctx?.previous !== undefined) qc.setQueryData(queryKeys.addresses, ctx.previous)
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: queryKeys.addresses }),
   })
 }
 
